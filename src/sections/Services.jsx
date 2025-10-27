@@ -11,21 +11,21 @@ export default function Services(){
   const ref = useInViewLoop({ threshold: 0.15 });
 
   const onMouseMove = (e) => {
-    const t = e.currentTarget.querySelector(".title");
-    if (!t) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    const dx = (e.clientX - (r.left + r.width/2)) / r.width;
-    const dy = (e.clientY - (r.top  + r.height/2)) / r.height;
-    t.style.transform = `translate(${dx*10}px, ${dy*10}px)`;
+    const v = e.currentTarget;
+    const r = v.getBoundingClientRect();
+    const dx = ((e.clientX - (r.left + r.width/2)) / r.width);
+    const dy = ((e.clientY - (r.top  + r.height/2)) / r.height);
+    v.style.setProperty("--tx", `${dx * 8}px`);
+    v.style.setProperty("--ty", `${dy * 8}px`);
   };
   const onLeave = (e) => {
-    const t = e.currentTarget.querySelector(".title");
-    if (t) t.style.transform = "translate(0,0)";
+    e.currentTarget.style.removeProperty("--tx");
+    e.currentTarget.style.removeProperty("--ty");
   };
 
   return (
     <>
-      {/* СЕКЦИЯ УСЛУГ на изумрудном фоне, во всю ширину и без внешних отступов */}
+      {/* секция услуг на бренд-фоне, во всю ширину */}
       <section
         id="services"
         className="section full-bleed tiles-overlap after-hero services-section"
@@ -34,17 +34,26 @@ export default function Services(){
       >
         <div className="tiles tiles-stagger tiles-tall full-bleed-padding inview-group">
           {items.map((it, i)=>(
-            <div className="tile reveal-zoom" style={{ "--d": `${i * 0.06}s` }} key={i}>
-              <div className="visual" onMouseMove={onMouseMove} onMouseLeave={onLeave}>
+            <div className="tile reveal-zoom service-tile" style={{ "--d": `${i * 0.06}s` }} key={i}>
+              <div
+                className="visual service-visual"
+                onMouseMove={onMouseMove}
+                onMouseLeave={onLeave}
+              >
                 <img src={it.img} alt={it.title} loading="lazy" />
-                <div className="title">{it.title}</div>
+                {/* затемняющая нижняя подложка для контраста */}
+                <span className="service-shade" aria-hidden="true" />
+                {/* вертикальная подпись слева */}
+                <div className="title-vert">
+                  <span>{it.title}</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Изумрудная подпись под блоком услуг (вплотную) */}
+      {/* подпись-CTA под блоком услуг (вплотную) */}
       <section className="band emerald-cta full-bleed" aria-label="О компании">
         <div className="emerald-cta-inner">
           <p className="emerald-cta-line">

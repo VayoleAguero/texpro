@@ -2,7 +2,8 @@
    GLOBAL / TOKENS
 ========================================================= */
 :root{
-  --brand: #0F5D59;              /* основной изумрудно-аквамариновый */
+  --brand: #102B30;              /* тёмный изумруд как в референсе */
+  --brand-weak: #163D43;         /* полутон светлее, если понадобится */
   --header-h: 128px;
   --edge-zone: 28px;
 
@@ -118,84 +119,104 @@ html { scroll-behavior: smooth; }
 .backdrop.show { opacity:1; pointer-events:auto; }
 
 /* =========================================================
-   HERO (основа для слоёв)
+   HERO — АВТОПЛЕЕР
 ========================================================= */
-.hero{ position:relative; }
-.hero.hero-skew{ position: relative; min-height: 76vh; isolation: isolate; }
-.hero-skew .hero-bg{ position:absolute; inset:0; overflow:hidden; }
-.hero-skew .hero-bg img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.98); }
-
-/* ЛЕВАЯ плашка по умолчанию */
-.hero-wedge{ position:absolute; inset:0 auto 0 0; width: clamp(54%, 58vw, 62%); z-index:1; }
-.hero-wedge-layer{
-  position:absolute; inset:0;
-  background: var(--brand);
-  clip-path: polygon(0 0, 90% 0, 72% 100%, 0% 100%);
-  box-shadow: 0 2px 0 rgba(255,255,255,.75);
-}
-
-/* контент поверх плашки */
-.hero-content{ position:absolute; inset:0; display:flex; align-items:center; z-index:2; pointer-events:none; }
-.hero-content--right{ justify-content:flex-end; }
-.hero-title{
-  color:#fff; font-weight:800; font-size: clamp(42px, 8.8vw, 116px); line-height:1.02; margin:0;
-  padding: 0 clamp(16px, 8vw, 84px);
-  transform-origin:left center;
-  pointer-events:auto;
-}
-
-/* реакция текста на hover — лёгкое «всплытие» */
-.hover-float{
-  transition: transform .45s cubic-bezier(.2,.8,.2,1), letter-spacing .45s ease;
-}
-.hover-float:hover{
-  transform: translateY(-6px) scale(1.02);
-  letter-spacing: .5px;
-}
-
-/* адаптив клипа плашки */
-@media (max-width: 1024px){
-  .hero-wedge{ width: 75%; }
-  .hero-wedge-layer{ clip-path: polygon(0 0, 92% 0, 78% 100%, 0% 100%); }
-}
-@media (max-width: 640px){
-  .hero.hero-skew{ min-height: 60svh; }
-  .hero-wedge{ width: 86%; }
-  .hero-wedge-layer{ clip-path: polygon(0 0, 96% 0, 88% 100%, 0% 100%); }
-}
-
-/* =========================================================
-   SCROLL-HERO c пин-плато (второй экран)
-========================================================= */
-.scroll-hero.pinplate{
+.hero-auto{
   position: relative;
-  height: 420vh; /* длинный путь → очень плавно */
-  z-index: 0;
+  height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
 }
-.scroll-hero-sticky{
-  position: sticky; top: 0; height: 100vh; overflow: clip; isolation: isolate;
-  z-index: 0;
+.hero-auto__panel{
+  position:absolute; inset:0;
+  display:grid; place-items:center;
+  opacity: 0;
+  transition: opacity .35s ease;
+  pointer-events: none;
 }
-.hero-slide{ position:absolute; inset:0; pointer-events:none; transition: opacity .5s ease; }
-
-/* правая плашка и формы клина */
-.hero-wedge--right{ left: auto; right: 0; width: clamp(54%, 58vw, 62%); }
-.wedge-left  { clip-path: polygon(0 0, 90% 0, 72% 100%, 0% 100%); }
-.wedge-right { clip-path: polygon(10% 0, 100% 0, 100% 100%, 28% 100%); }
-
-.scroll-hero-sticky::after{
-  content:"";
-  position:absolute; left:0; right:0; bottom:0; height:4px;
-  background: rgba(255,255,255,.78);
-  z-index: 1;
+.hero-auto__panel.is-active{
+  opacity: 1;
+  pointer-events: auto;
 }
 
-/* типографика заголовков под референс */
-.hero-title--full   { font-size: clamp(44px, 9vw, 120px); }
-.hero-title--chunk  { font-size: clamp(54px, 20vw, 260px); line-height: .92; }
+/* фон */
+.hero-bg{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  transform:scale(1.02);
+  filter:saturate(.96) contrast(1.02);
+}
+
+/* клин (треугольная плашка) + «перетекание» */
+.hero-overlay{
+  position:absolute; inset:0 auto 0 0; width:66%; height:100%;
+  background:var(--brand);
+  clip-path:polygon(0 0, 90% 0, 75% 100%, 0% 100%);
+  transform: translate3d(var(--fromX, 0%), 0, 0);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1);
+  z-index:1;
+}
+.hero-overlay.right{
+  left:auto; right:0;
+  clip-path:polygon(25% 0, 100% 0, 100% 100%, 10% 100%);
+}
+.hero-auto__panel.is-active .hero-overlay{
+  transform: translate3d(0,0,0); /* въезд к своей позиции */
+}
+
+/* заголовки */
+.hero-title{
+  position:relative; z-index:2; margin:0; color:#fff; font-weight:800; line-height:1.05;
+  text-shadow:0 2px 10px rgba(0,0,0,.15);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+  will-change:transform, opacity;
+}
+.hero-title--left{ justify-self:start; margin-left:clamp(16px,8vw,120px); }
+.hero-title--right{ justify-self:end;   margin-right:clamp(16px,8vw,120px); }
+.hero-title--lg{ font-size:clamp(38px,10vw,120px); }
+.hero-title--mega{ font-size:clamp(72px,22vw,380px); letter-spacing:.02em; line-height:.9; text-transform:uppercase; font-weight:900; }
+.hero-auto__panel:not(.is-active) .hero-title{ opacity:0; transform:translate3d(10px,0,0); }
+
+/* ===== Пятый слайд: два треугольника, которые съезжаются ===== */
+.split-tri{
+  position:absolute; inset:0;
+  overflow:hidden;
+  isolation:isolate;
+}
+.tri{
+  position:absolute; inset:0;
+  background-size: cover;
+  background-position: center;
+  will-change: transform, clip-path, opacity;
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+}
+/* Левая треугольная маска */
+.tri-left{
+  clip-path: polygon(0 0, 62% 0, 52% 100%, 0% 100%);
+  transform: translate3d(-12%, 0, 0);
+}
+/* Правая треугольная маска */
+.tri-right{
+  clip-path: polygon(48% 0, 100% 0, 100% 100%, 38% 100%);
+  transform: translate3d(12%, 0, 0);
+}
+.hero-auto__panel.is-active .tri-left,
+.hero-auto__panel.is-active .tri-right{
+  transform: translate3d(0,0,0);
+}
+/* Белая диагональная перегородка по центру */
+.split-tri-divider{
+  position:absolute; left:50%; top:-2%;
+  width:10px; height:104%;
+  transform:translateX(-50%) skewX(-12deg);
+  background:rgba(255,255,255,.9);
+  box-shadow:0 0 0 1px rgba(0,0,0,.06) inset;
+  pointer-events:none;
+}
 
 /* =========================================================
-   SECTIONS / FULL-BLEED / SPLIT
+   SECTIONS / FULL-BLEED / SPLIT (остальное — как было)
 ========================================================= */
 .section { padding: var(--pad-section-desktop) 0; }
 .section-narrow { padding: calc(var(--pad-section-desktop) * .7) 0; }
@@ -211,7 +232,6 @@ html { scroll-behavior: smooth; }
 .full-bleed { position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; width: 100vw; }
 .full-bleed-padding { padding-left: 0; padding-right: 0; }
 
-/* split-секции */
 .split { display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; padding: 0 0; }
 .split.reverse { grid-template-columns:.9fr 1.1fr; }
 .split img { width:100%; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
@@ -514,60 +534,6 @@ html { scroll-behavior: smooth; }
 .levitate:hover .float-caption,
 .levitate-tilt:hover .float-caption { transform: translateY(0); opacity: 1; }
 
-/* ===== HERO (общие) ===== */
-:root{ --brand:#0F5D59; }
-
-.hero-steps{ position: relative; }
-.hero-steps-sticky{ position: sticky; top:0; height:100vh; overflow:hidden; }
-.hero-panel{ position:absolute; inset:0; display:grid; place-items:center; isolation:isolate; transition:opacity .35s ease; }
-
-.hero-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scale(1.02); filter:saturate(.96) contrast(1.02); }
-
-.hero-overlay{
-  position:absolute; inset:0 auto 0 0; width:66%; height:100%;
-  background:var(--brand);
-  clip-path:polygon(0 0, 90% 0, 75% 100%, 0% 100%);
-  transform:translate3d(0,0,0); will-change:transform; z-index:1;
-}
-.hero-overlay.right{
-  left:auto; right:0;
-  clip-path:polygon(25% 0, 100% 0, 100% 100%, 10% 100%);
-}
-
-.hero-title{
-  position:relative; z-index:2; margin:0; color:#fff; font-weight:800; line-height:1.05;
-  text-shadow:0 2px 10px rgba(0,0,0,.15);
-  transition:transform .4s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
-  will-change:transform, opacity;
-}
-.hero-title--left{ justify-self:start; margin-left:clamp(16px,8vw,120px); }
-.hero-title--right{ justify-self:end;   margin-right:clamp(16px,8vw,120px); }
-.hero-title--lg{ font-size:clamp(38px,10vw,120px); }
-.hero-title--mega{ font-size:clamp(72px,22vw,380px); letter-spacing:.02em; line-height:.9; text-transform:uppercase; font-weight:900; }
-
-/* ===== HERO: split (две фотографии с диагональным скосом) ===== */
-.hero-split{ position:absolute; inset:0; }
-.split-img{
-  position:absolute; inset:0;
-  width:100%; height:100%; object-fit:cover;
-  transform:scale(1.02); filter:saturate(.95) contrast(1.02);
-}
-.split-img.left{  clip-path: polygon(0 0, 62% 0, 52% 100%, 0% 100%); }
-.split-img.right{ clip-path: polygon(48% 0, 100% 0, 100% 100%, 38% 100%); }
-.split-divider{
-  position:absolute; left:50%; top:-2%;
-  width:10px; height:104%;
-  transform:translateX(-50%) skewX(-12deg);
-  background:rgba(255,255,255,.9);
-  box-shadow:0 0 0 1px rgba(0,0,0,.06) inset;
-  pointer-events:none;
-}
-@media (max-width: 640px){
-  .split-img.left{  clip-path: polygon(0 0, 68% 0, 56% 100%, 0 100%); }
-  .split-img.right{ clip-path: polygon(44% 0, 100% 0, 100% 100%, 32% 100%); }
-  .split-divider{ width:8px; }
-}
-
 /* ===== SERVICES (тянуть на брендовый фон) ===== */
 .services-section{
   background: var(--brand);
@@ -624,7 +590,6 @@ html { scroll-behavior: smooth; }
   .emerald-cta{ padding: 28px 0; }
   .emerald-cta-inner{ padding: 0 16px; }
 }
-/* жёстко влево подпись под услугами */
 .services-section + .emerald-cta .emerald-cta-inner{
   text-align: left !important;
   padding-left: 24px;
@@ -763,12 +728,11 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 18px 44px rgba(0,0,0,.25);
   object-fit: cover;
 }
-/* КАРТОЧКА ТЕПЕРЬ ВНУТРИ БЛОКА */
 .standards-media .std-front,
 .standards-media .std-fore{
   position:absolute;
   left: clamp(12px, 6vw, 40px);
-  top: clamp(12px, 3vw, 24px);      /* <-- раньше было отрицательное значение */
+  top: clamp(12px, 3vw, 24px);
   width: min(44%, 360px);
   border: 10px solid #fff;
   border-radius:12px;
@@ -823,3 +787,73 @@ html { scroll-behavior: smooth; }
   width:12px; height:2px;
   background:#fff; opacity:.9; border-radius:1px;
 }
+
+
+/* ===== SERVICES — вертикальные подписи и плавность ===== */
+.service-tile { overflow: visible; }
+
+.service-visual{
+  position: relative;
+  height: 100%;
+  transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, filter .35s ease;
+  will-change: transform;
+  overflow: hidden;
+  background:#000;
+  border-right: 1px solid rgba(255,255,255,.06);
+}
+.service-visual img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  transform: scale(1.04);
+  filter: saturate(.96) contrast(1.02);
+  transition: transform .6s cubic-bezier(.2,.8,.2,1), filter .6s ease, opacity .6s ease;
+}
+
+/* лёгкая тень у нижней кромки для читаемости на любых фото */
+.service-shade{
+  position:absolute; left:0; right:0; bottom:0; height:36%;
+  background: linear-gradient(to top, rgba(0,0,0,.42), rgba(0,0,0,0));
+  pointer-events:none;
+  transition: opacity .35s ease;
+}
+
+/* вертикальная подпись */
+.title-vert{
+  position:absolute; left:12px; top:12px; bottom:12px; width:auto;
+  display:flex; align-items:flex-end; /* текст снизу вверх */
+  z-index:2; pointer-events:none;
+}
+.title-vert span{
+  writing-mode: vertical-rl;      /* вертикальная вёрстка */
+  text-orientation: mixed;
+  transform: rotate(180deg);      /* читаем снизу вверх по левой стороне */
+  color:#fff;
+  font-weight:800;
+  letter-spacing:.5px;
+  font-size: clamp(18px, 2.2vw, 28px);
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+  opacity:.95;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+}
+
+/* hover: легкое увеличение и больше контраста */
+.service-visual:hover{
+  transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1.06);
+  box-shadow: 0 28px 72px rgba(0,0,0,.28);
+  filter: saturate(1.02) contrast(1.02);
+  z-index: 5;
+}
+.service-visual:hover img{ transform: scale(1.08); filter: saturate(1.05) contrast(1.05); }
+.service-visual:hover .service-shade{ opacity:.55; }
+.service-visual:hover .title-vert span{ opacity:1; }
+
+/* адаптив: две колонки, затем одна — подпись не мешает */
+@media (max-width: 900px){
+  .tiles{ grid-template-columns: repeat(2, 1fr); }
+  .title-vert{ left:10px; top:8px; bottom:8px; }
+}
+@media (max-width: 640px){
+  .tiles{ grid-template-columns: 1fr; }
+  .title-vert span{ font-size: clamp(16px, 4.2vw, 24px); }
+}
+
