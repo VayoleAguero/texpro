@@ -9,10 +9,12 @@ import Philosophy from "./sections/Philosophy";
 import Features from "./sections/Features";
 import Projects from "./sections/Projects";
 import Contact from "./sections/Contact";
-import Standards from "./sections/Standards"; // <- система стандартов
+import Standards from "./sections/Standards";
+
+// ✅ добавили импорт подводки к портфолио
+import PortfolioIntro from "./sections/PortfolioIntro";
 
 import "./App.css";
-
 import { initReveal } from "./lib/reveal";
 import { useParallax } from "./lib/parallax";
 
@@ -43,7 +45,7 @@ export default function App() {
           <About />
         </section>
 
-        {/* СИСТЕМА СТАНДАРТОВ — полноширинная секция */}
+        {/* СИСТЕМА СТАНДАРТОВ — без обёртки .section для full-bleed */}
         <Standards />
 
         {/* Philosophy */}
@@ -56,7 +58,10 @@ export default function App() {
           <Features />
         </section>
 
-        {/* Portfolio */}
+        {/* ✅ Подводка к портфолио (full-bleed блок) */}
+        <PortfolioIntro />
+
+        {/* Portfolio (якорь оставляем здесь) */}
         <section id="portfolio" className="section">
           <Projects />
         </section>
@@ -71,3 +76,32 @@ export default function App() {
     </>
   );
 }
+
+
+
+// TODO:
+// Применить 1–3 из фиксов к hero/tiles/cta.
+
+//Подкрутить scale/тени на карточках (Project/Tile).
+
+//Включить чуть большую амплитуду параллакса fast-слоёв.
+
+//Урезать tracking заголовков.
+
+// Проверить baseline подписей тайлов на трёх брейкпоинтах.
+
+// портфолио - убрать с главногооооооооо меню плитки с модалками, сделать просто портфолиииииио превью 
+// по нажатию на него открывать портфолиио
+// на сайдбаре при нажааатии кнопки портфолио сразу проваливаемся в портфолио, не яякорь,
+// 
+
+//
+// Шрифт : Dejavu Sans
+// 
+// 
+//
+// /*  08241E - цыет чуть потемнее для хедера
+//
+// то что в хиро сделать как карусель проектов для портфолио, в нем сдеелать краткую сводку на проект, инфу про проект, прии нажатии перейти в саму модалку окна
+// в хиро сделать анимку как на сайте с архитектурой(реверс инжинириннннннг)
+//  
