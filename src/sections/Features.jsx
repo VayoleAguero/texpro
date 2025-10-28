@@ -1,29 +1,29 @@
-const features = [
+import React from "react";
+
+const items = [
   {
-    title: "Естественно",
-    text: "С заботой о вас! Мы используем только экологически чистые материалы в работе.",
+    label: "естественно",
     icon: (
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 21c4.418 0 8-3.582 8-8 0-1.657-.672-3.157-1.758-4.242C17.157 7.672 15.657 7 14 7c-4.418 0-8 3.582-8 8 0 1.657.672 3.157 1.758 4.242C8.843 20.328 10.343 21 12 21Z"/>
-        <path d="M12 12V3M12 3l3 3M12 3 9 6" />
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 4s-5.5 0-9 3.5S6 14 6 17c0 2.2 1.8 4 4 4 3 0 5-1.5 7.5-5S20 4 20 4Z" fill="none"/>
+        <path d="M10 21c0-6 6-10 10-12" fill="none"/>
       </svg>
     ),
   },
   {
-    title: "Просто",
-    text: "Всё гениальное — просто. Все проекты отражают эту идеологию и созданы с этой идеей.",
+    label: "надежно",
     icon: (
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 2v20M4 12h16" />
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 12a9 9 0 0 1 18 0H3Z" fill="none"/>
+        <path d="M12 12v6a3 3 0 0 0 3 3" fill="none"/>
       </svg>
     ),
   },
   {
-    title: "С любовью",
-    text: "Всё, что мы делаем, сделано с любовью к своему делу, и в каждый проект мы вкладываем частичку себя.",
+    label: "с любовью",
     icon: (
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 22l7.8-8.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12.1 20.3 12 20.2 11.9 20.3C7 16.5 4 13.9 4 10.7 4 8.6 5.6 7 7.7 7c1.3 0 2.6.6 3.3 1.7.7-1.1 2-1.7 3.3-1.7 2.1 0 3.7 1.6 3.7 3.7 0 3.2-3 5.8-5.9 9.6Z" fill="none"/>
       </svg>
     ),
   },
@@ -31,28 +31,17 @@ const features = [
 
 export default function Features() {
   return (
-    <div className="full-bleed">
-      <section className="band band--emerald features-band">
-        <div className="features-grid">
-          {features.map((f, i) => (
-            <article
-              key={i}
-              className="feature-card levitate"
-              data-parallax
-              data-strength="28"
-              data-drift="0.4"
-              data-anim="scale-in"
-              data-delay={0.05 * i}
-            >
-              <div className="feature-icon">
-                <div className="feature-icon-ring">{f.icon}</div>
-              </div>
-              <h3>{f.title}</h3>
-              <p>{f.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-    </div>
+    <section id="features" className="features-circles" aria-label="Преимущества">
+      <div className="features-circles__grid">
+        {items.map((it, i) => (
+          <div className="features-circles__item" key={i}>
+            <span className="features-circles__ico" aria-hidden="true">
+              {it.icon}
+            </span>
+            <div className="features-circles__label">{it.label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

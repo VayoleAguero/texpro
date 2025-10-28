@@ -9,9 +9,10 @@ import Philosophy from "./sections/Philosophy";
 import Features from "./sections/Features";
 import Projects from "./sections/Projects";
 import Contact from "./sections/Contact";
-import Standards from "./sections/Standards"; // <- правильный импорт
+import Standards from "./sections/Standards"; // <- система стандартов
 
 import "./App.css";
+
 import { initReveal } from "./lib/reveal";
 import { useParallax } from "./lib/parallax";
 
@@ -42,7 +43,7 @@ export default function App() {
           <About />
         </section>
 
-        {/* СИСТЕМА СТАНДАРТОВ — ВАЖНО: без обёртки .section, чтобы не было белых полей */}
+        {/* СИСТЕМА СТАНДАРТОВ — полноширинная секция */}
         <Standards />
 
         {/* Philosophy */}

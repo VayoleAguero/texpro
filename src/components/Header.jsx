@@ -35,12 +35,17 @@ export default function Header() {
       if (el) el.classList.toggle("scrolled", window.scrollY > 4);
     };
     const onKey = (e) => { if (e.key === "Escape") hardClose(); };
+    const onHash = () => hardClose();
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("keydown", onKey);
+    window.addEventListener("hashchange", onHash);
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("hashchange", onHash);
     };
   }, []);
 
@@ -59,11 +64,20 @@ export default function Header() {
     }
   };
 
+  // аккуратный скролл с учётом фикс-хедера
+  const scrollWithOffset = (el) => {
+    const header = document.querySelector(".header");
+    const headerH = header ? header.getBoundingClientRect().height : 0;
+    const extra = 16; // совпадает с [id]{ scroll-margin-top: var(--header-h)+16px }
+    const top = el.getBoundingClientRect().top + window.scrollY - (headerH + extra);
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   const handleNavClick = (e, href) => {
     e.preventDefault();
     const el = document.querySelector(href);
     hardClose();
-    if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+    if (el) setTimeout(() => scrollWithOffset(el), 0);
   };
 
   const replayLogoAnim = () => {
@@ -76,11 +90,26 @@ export default function Header() {
     node.classList.add("logo-anim", "logo-hover-pop");
   };
 
+  // ====== Меню из макета (привязки к существующим блокам) ======
+  // Если в будущем появятся отдельные страницы/якоря — просто сменить href.
+  const menu = [
+    ["#home", "В НАЧАЛО"],                       // home
+    ["#portfolio", "ПОРТФОЛИО"],                 // сетка проектов
+    ["#portfolio", "ПРИМЕРЫ ПРОЕКТОВ"],          // туда же
+    ["#services", "СТРОИМ ДОМА"],                // услуги
+    ["#services", "ИНТЕРЬЕРЫ И ОТДЕЛКА КВАРТИР"],// услуги
+    ["#portfolio", "ОБЩЕСТВЕННЫЕ ПРОСТРАНСТВА"],  // проекты (фильтр появится позже)
+    ["#standards", "ИНЖЕНЕРИЯ"],                 // система стандартов как инженерный блок
+    ["#philosophy", "РЕСТАВРАЦИЯ"],              // философия/подход (пока сюда)
+    ["#services", "СОГЛАСОВАНИЕ ПЕРЕПЛАНИРОВКИ"],// услуги
+    ["#philosophy", "НАША СТРАСТЬ"],             // философия/миссия
+  ];
+
   return (
     <>
       <header className="header">
         <div className="container header-inner">
-          {/* ЛЕВАЯ ГРУППА: ЛОГО */}
+          {/* ЛОГО */}
           <div
             ref={logoRef}
             className="logo"
@@ -89,7 +118,7 @@ export default function Header() {
             onMouseEnter={replayLogoAnim}
             title="На главную"
           >
-            <a href="#home" className="logo-link" aria-label="respace — на главную">
+            <a href="#home" className="logo-link" aria-label="respace — на главную" onClick={(e)=>handleNavClick(e,"#home")}>
               <img src={logoUrl} alt="respace" className="logo-img logo-white" />
               <span className="logo-stack">
                 <span className="logo-text">respace</span>
@@ -98,12 +127,8 @@ export default function Header() {
             </a>
           </div>
 
-          {/* ПРАВАЯ ГРУППА: телефон + иконки + бургер */}
-          <div
-            className="header-right"
-            style={{ display: "flex", alignItems: "center", gap: 12 }}
-          >
-            {/* Телефон – упирается в правый блок */}
+          {/* ПРАВО: телефон + соц + бургер */}
+          <div className="header-right" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <a
               href="tel:+70000000000"
               className="header-phone"
@@ -125,7 +150,6 @@ export default function Header() {
               +7(000)000-0000
             </a>
 
-            {/* Иконки */}
             <div className="header-actions" aria-label="Соцсети" style={{ display: "flex", gap: 12 }}>
               <button className="icon-btn icon-anim" type="button" aria-label="Telegram" title="Telegram">
                 <span className="icon-aura" aria-hidden />
@@ -142,7 +166,6 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Бургер */}
             <button
               className="burger"
               type="button"
@@ -160,7 +183,7 @@ export default function Header() {
 
       <div className="header-spacer" />
 
-      {/* невидимая «горячая» зона у правого края */}
+      {/* горячая зона справа для hover-открытия */}
       <div
         className="edge-hotzone"
         onPointerEnter={() => setHoverEdge(true)}
@@ -178,21 +201,21 @@ export default function Header() {
       >
         <button className="sidebar-close" type="button" onClick={hardClose} aria-label="Закрыть меню">×</button>
 
+        {/* ====== Главное меню из макета ====== */}
         <nav style={{ marginTop: 40 }}>
-          {[
-            ["#home", "Главная"],
-            ["#clients", "Клиентам"],
-            ["#services", "Услуги"],
-            ["#portfolio", "Портфолио"],
-            ["#philosophy", "Примеры проектов"],
-            ["#contacts", "Контакты"],
-          ].map(([href, label]) => (
-            <a key={href} href={href} onClick={(e) => handleNavClick(e, href)}>
+          {menu.map(([href, label]) => (
+            <a
+              key={`${href}-${label}`}
+              href={href}
+              onClick={(e) => handleNavClick(e, href)}
+              style={{ textTransform: "uppercase", fontWeight: 800, letterSpacing: ".3px" }}
+            >
               {label}
             </a>
           ))}
         </nav>
 
+        {/* Контакты внизу */}
         <div style={{ marginTop: 24, opacity: 0.9, fontSize: 14 }}>
           <div style={{ fontWeight: 600, marginBottom: 6 }}>Свяжитесь с нами</div>
           <div>Телефон <a href="tel:+79104519866" style={{ textDecoration: "underline" }}>+7(910) 451-98-66</a></div>
