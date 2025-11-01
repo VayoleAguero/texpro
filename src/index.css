@@ -4,7 +4,7 @@
 :root{
   --brand: #102B30;              /* тёмный изумруд как в референсе */
   --brand-weak: #163D43;         /* полутон светлее, если понадобится */
-                                  /*  08241E - цыет чуть потемнее для хедера */
+                                  /*  08241E - цвет чуть потемнее для хедера */
   --header-h: 128px;
   --edge-zone: 28px;
 
@@ -12,19 +12,48 @@
   --pad-section-desktop: 160px;
   --pad-section-tablet: 120px;
   --pad-section-mobile: 80px;
+
+  /* размеры вертикального текста (левый бордюр) */
+  --tv-size: clamp(18px, 2.2vw, 28px);
+  --tv-size-lg: clamp(36px, 4.4vw, 56px); /* ~2x */
+
+  /* величина контролируемого overlap секции «Стандарты» */
+  --standards-overlap: 120px;
+}
+
+/* ===== Global font: DejaVu Sans ===== */
+@font-face{
+  font-family: "DejaVu Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: local("DejaVu Sans"), local("DejaVuSans");
 }
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
+html {
+  scroll-behavior: smooth;
+  font-family: "DejaVu Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: inherit; /* унаследует DejaVu Sans */
   color: #0a0e0e;
   background: #fff;
 }
-a { color: inherit; text-decoration: none; }
 
-html { scroll-behavior: smooth; }
+/* Явно фиксируем ключевые заголовки на DejaVu Sans (на случай сторонних виджетов) */
+h1, h2, h3, h4, h5, h6,
+.hero-title,
+.tile .title,
+.pi-title,
+.about-h,
+.standards-title {
+  font-family: "DejaVu Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+a { color: inherit; text-decoration: none; }
 [id] { scroll-margin-top: calc(var(--header-h) + 16px); }
 
 .container { max-width: none; width: 100%; margin: 0; padding: 0; }
@@ -313,12 +342,61 @@ html { scroll-behavior: smooth; }
 }
 .in-view .reveal-zoom{ opacity: 1; transform: translateY(0) scale(1); }
 
+/* ===== SERVICES: default dark → hover brighten + grow (по ТЗ) ===== */
+.services-section .tile .visual img{
+  /* затемняем по умолчанию */
+  filter: brightness(.68) saturate(.92) contrast(1.02);
+  transform: scale(1.02);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), filter .45s ease;
+}
+.services-section .tile::after{
+  background: rgba(0,0,0,.38);
+  opacity: 1;
+  transition: opacity .35s ease;
+}
+.services-section .tile .title{
+  transform: translateY(10px) scale(1);
+  transform-origin: left bottom;
+  transition: transform .42s cubic-bezier(.2,.8,.2,1), opacity .42s ease, letter-spacing .35s ease;
+  opacity: .9;
+}
+.services-section .tile:hover .visual img,
+.services-section .tile:focus-within .visual img{
+  filter: brightness(1) saturate(1.05) contrast(1.05);
+  transform: scale(1.08);
+}
+.services-section .tile:hover::after,
+.services-section .tile:focus-within::after{
+  opacity: .12;
+}
+.services-section .tile:hover .title,
+.services-section .tile:focus-within .title{
+  transform: translateY(0) scale(1.12);
+  opacity: 1;
+  letter-spacing: .4px;
+  text-shadow: 0 3px 12px rgba(0,0,0,.55);
+}
+.services-section .tile:hover .visual,
+.services-section .tile:focus-within .visual{
+  transform: scale(1.08);
+  box-shadow: 0 24px 64px rgba(0,0,0,.28);
+  filter: saturate(1.02) contrast(1.02);
+  z-index: 5;
+}
+@media (max-width: 640px){
+  .services-section .tile .visual img{ transform: scale(1.01); }
+  .services-section .tile:hover .visual img,
+  .services-section .tile:focus-within .visual img{ transform: scale(1.04); }
+  .services-section .tile:hover .title,
+  .services-section .tile:focus-within .title{ transform: translateY(0) scale(1.06); }
+}
+
 /* =========================================================
    FEATURES
 ========================================================= */
 .features { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding:0 0; }
 .feature { text-align:center; }
-.feature .icon { width:64px; height:64px; margin:0 auto 16px; border:2px solid #059669; border-radius:50%; }
+.feature .icon { width:64px; height:64px; margin:0 авто 16px; border:2px solid #059669; border-radius:50%; }
 
 /* карточки фич */
 .feature-card{ transition: transform .35s ease, box-shadow .35s ease; }
@@ -705,7 +783,9 @@ html { scroll-behavior: smooth; }
   background: var(--brand);
   color:#fff;
   padding: clamp(48px, 8vw, 100px) 0;
-  overflow: hidden;                 /* чтобы ничего не вылезало за пределы секции */
+  overflow: visible;                 /* важно: не обрезаем выступы */
+  position: relative;
+  z-index: 1;
 }
 .standards-band .standards-grid{
   max-width: 1240px;
@@ -720,7 +800,7 @@ html { scroll-behavior: smooth; }
   .standards-band .standards-grid{ grid-template-columns: 1fr; }
 }
 
-.standards-media{ position: relative; }
+.standards-media{ position: relative; display:grid; align-items:center; }
 .standards-media .std-bg{
   width:100%;
   height:auto;
@@ -729,15 +809,17 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 18px 44px rgba(0,0,0,.25);
   object-fit: cover;
 }
+/* ЦЕНТРИРУЕМ ПЕРЕДНЮЮ КАРТИНКУ — УМЕНЬШЕНО И ПРИПОДНЯТО */
 .standards-media .std-front,
 .standards-media .std-fore{
   position:absolute;
   left: clamp(12px, 6vw, 40px);
-  top: clamp(12px, 3vw, 24px);
-  width: min(44%, 360px);
-  border: 10px solid #fff;
+  top: 40%;
+  transform: translateY(-72%);
+  width: min(36%, 300px);
+  border: 8px solid #fff;
   border-radius:12px;
-  box-shadow: 0 22px 50px rgba(0,0,0,.35);
+  box-shadow: 0 18px 44px rgba(0,0,0,.30);
   object-fit: cover;
   z-index: 2;
 }
@@ -747,7 +829,8 @@ html { scroll-behavior: smooth; }
     position:relative;
     left:0;
     top: 12px;
-    width: clamp(220px, 60%, 380px);
+    transform: none;
+    width: clamp(200px, 52%, 320px);
   }
 }
 
@@ -789,7 +872,6 @@ html { scroll-behavior: smooth; }
   background:#fff; opacity:.9; border-radius:1px;
 }
 
-
 /* ===== SERVICES — вертикальные подписи и плавность ===== */
 .service-tile { overflow: visible; }
 
@@ -803,6 +885,28 @@ html { scroll-behavior: smooth; }
   background:#000;
   border-right: 1px solid rgba(255,255,255,.06);
 }
+/* БЛИК слева — показываем при ховере */
+.service-visual::before{
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: clamp(12px, 3.5vw, 64px);
+  background: linear-gradient(90deg,
+              rgba(255,255,255,.65) 0%,
+              rgba(255,255,255,.35) 35%,
+              rgba(255,255,255,0) 100%);
+  opacity: 0;
+  transform: translateX(-18%);
+  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+  z-index: 1; /* ниже текста, выше картинки */
+}
+.services-section .tile:hover .service-visual::before,
+.services-section .tile:focus-within .service-visual::before{
+  opacity: .9;
+  transform: translateX(0);
+}
+
 .service-visual img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
   transform: scale(1.04);
@@ -831,13 +935,15 @@ html { scroll-behavior: smooth; }
   color:#fff;
   font-weight:800;
   letter-spacing:.5px;
-  font-size: clamp(18px, 2.2vw, 28px);
+  font-size: var(--tv-size);      /* БАЗОВЫЙ РАЗМЕР */
+  line-height: 1;
   text-shadow: 0 2px 10px rgba(0,0,0,.35);
   opacity:.95;
-  transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+  /* увеличиваем шрифт (а не scale) — не двигаем позицию */
+  transition: font-size .35s ease, opacity .35s ease;
 }
 
-/* hover: легкое увеличение и больше контраста */
+/* hover: картинка/тень + текст просто становится крупнее */
 .service-visual:hover{
   transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1.06);
   box-shadow: 0 28px 72px rgba(0,0,0,.28);
@@ -848,6 +954,12 @@ html { scroll-behavior: smooth; }
 .service-visual:hover .service-shade{ opacity:.55; }
 .service-visual:hover .title-vert span{ opacity:1; }
 
+/* именно тут — переключение на «в 2 раза» */
+.services-section .tile:hover .title-vert span,
+.services-section .tile:focus-within .title-vert span{
+  font-size: var(--tv-size-lg);
+}
+
 /* адаптив: две колонки, затем одна — подпись не мешает */
 @media (max-width: 900px){
   .tiles{ grid-template-columns: repeat(2, 1fr); }
@@ -855,7 +967,8 @@ html { scroll-behavior: smooth; }
 }
 @media (max-width: 640px){
   .tiles{ grid-template-columns: 1fr; }
-  .title-vert span{ font-size: clamp(16px, 4.2vw, 24px); }
+  /* помягче на узких экранах */
+  :root{ --tv-size-lg: clamp(28px, 6vw, 40px); }
 }
 
 /* =========================================================
@@ -1019,7 +1132,6 @@ html { scroll-behavior: smooth; }
 
 /* =========================================================
    PATCh-СТИЛИ: САЙДБАР / СТАНДАРТЫ / ФИЧИ-«КОЛЬЦА»
-   Эти правила можно просто добавить в конец App.css.
 ========================================================= */
 
 /* ===== SIDEBAR: центрирование, крупная типографика ===== */
@@ -1076,7 +1188,9 @@ html { scroll-behavior: smooth; }
   background: var(--brand);
   color:#fff;
   padding: clamp(48px, 8vw, 100px) 0;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
 }
 .standards-band .standards-grid{
   max-width: 1240px;
@@ -1100,19 +1214,21 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 18px 44px rgba(0,0,0,.25);
   object-fit: cover;
 }
+/* УМЕНЬШЕННАЯ ВЕРСИЯ ПЕРЕДНЕГО ФОТО (дублируем поведение из основного блока) */
 .standards-media .std-front{
   position:absolute;
   left: clamp(12px, 6vw, 40px);
-  top: clamp(12px, 3vw, 24px);
-  width: min(44%, 360px);
-  border: 10px solid #fff;
+  top: 40%;
+  transform: translateY(-72%);
+  width: min(36%, 300px);
+  border: 8px solid #fff;
   border-radius:12px;
-  box-shadow: 0 22px 50px rgba(0,0,0,.35);
+  box-shadow: 0 18px 44px rgba(0,0,0,.30);
   object-fit: cover;
   z-index: 2;
 }
 @media (max-width: 980px){
-  .standards-media .std-front{ position:relative; left:0; top:12px; width: clamp(220px, 60%, 380px); }
+  .standards-media .std-front{ position:relative; left:0; top:12px; transform:none; width: clamp(200px, 52%, 320px); }
 }
 
 /* Белая карточка */
@@ -1133,8 +1249,7 @@ html { scroll-behavior: smooth; }
   color:#0a0e0e;
 }
 .st-title-underline{
-  display:block;
-  width:140px; height:2px;
+  display:block; width:140px; height:2px;
   background: rgba(0,0,0,.85);
   opacity:.8;
   margin: 8px 0 18px;
@@ -1190,3 +1305,176 @@ html { scroll-behavior: smooth; }
   color:#374151; font-size: clamp(14px, 1.6vw, 16px);
   line-height: 1.45;
 }
+
+/* ===== (удалён старый хак со standards-band + *; используем модификатор ниже) ===== */
+
+
+/* =========================================================
+   PROJECTS HERO (анимация как в Hero, но для проектов)
+========================================================= */
+.proj-auto{
+  position: relative;
+  height: 92vh;                 /* высокий блок */
+  min-height: 560px;
+  background: var(--brand);
+  overflow: hidden;
+  isolation: isolate;
+  padding: 0;                   /* без лишних отступов */
+  margin-top: -18px;            /* «подтягиваем» шов сверху ещё чуть-чуть */
+}
+@media (max-width: 900px){
+  .proj-auto{ height: 82svh; min-height: 480px; }
+}
+
+.proj-panel{
+  position:absolute; inset:0;
+  display:grid; place-items:center;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--fade, 900ms) ease;
+}
+.proj-panel.is-active{ opacity: 1; pointer-events:auto; }
+.proj-panel.was-active{ opacity: 0; pointer-events:none; }
+
+.proj-bg{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(.98) contrast(1.02);
+}
+
+/* клин */
+.proj-overlay{
+  position:absolute; inset:0 auto 0 0; width:66%; height:100%;
+  background: var(--brand);
+  clip-path: polygon(0 0, 90% 0, 75% 100%, 0% 100%);
+  transform: translate3d(var(--fromX, 0%), 0, 0);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1);
+  z-index: 1;
+}
+.proj-overlay.right{
+  left:auto; right:0;
+  clip-path: polygon(25% 0, 100% 0, 100% 100%, 10% 100%);
+}
+
+/* карточка описания */
+.proj-card{
+  position:relative;
+  z-index:2;
+  width: min(560px, 86vw);
+  background: var(--brand);                 /* ← изумрудный фон */
+  border: 1px solid rgba(255,255,255,.18);
+  color:#fff;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.22);
+  padding: clamp(18px, 3.5vw, 32px);
+}
+.proj-card.right{ justify-self: end;  margin-right: clamp(16px, 6vw, 80px); }
+.proj-card.left { justify-self: start; margin-left:  clamp(16px, 6vw, 80px);  }
+
+.proj-title{
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: .5px;
+  font-size: clamp(22px, 3vw, 36px);
+}
+.proj-underline{
+  display:block; width:140px; height:2px;
+  background: rgba(255,255,255,.92);
+  margin: 8px 0 14px;
+}
+.proj-summary{
+  margin: 0 0 8px;
+  font-size: clamp(16px, 1.8vw, 20px);
+  line-height: 1.35;
+  opacity: .95;
+}
+.proj-list{
+  margin: 0 0 10px; padding: 0; list-style: none;
+  display:grid; gap: 6px;
+  font-size: clamp(15px, 1.6vw, 18px);
+}
+.proj-list li{
+  position: relative; padding-left: 20px; line-height: 1.35;
+}
+.proj-list li::before{
+  content:"—"; position:absolute; left:0; top:0; opacity:.9;
+}
+.proj-cta{
+  margin-top: 6px;
+  font-weight: 700; letter-spacing:.2px;
+  opacity: .96;
+}
+
+/* курсор/фокус для доступности */
+.proj-panel{ cursor: pointer; }
+.proj-panel:focus-visible .proj-card{ outline: 2px solid #fff; outline-offset: 2px; }
+
+/* =========================================================
+   НОВЫЕ МОДИФИКАТОРЫ ДЛЯ «СТАНДАРТОВ»
+   (исправляют щель и поднимают фото)
+========================================================= */
+
+/* Cекция растягивает фон вниз и забирает на себя следующий блок */
+.standards-band--tight{
+  padding-bottom: 0;
+  margin-bottom: calc(var(--standards-overlap) * -1);
+}
+
+/* Компенсация у следующей секции: не даём контенту заехать под «Стандарты» */
+.standards-band--tight + *{
+  padding-top: var(--standards-overlap);
+  position: relative;
+  z-index: 0;
+}
+
+/* Левый медиа-столбец визуально выше (тонкая подстройка) */
+.standards-media--lift{
+  transform: translateY(-42px);
+}
+
+/* Переднее фото — ещё выше центра (поверх стандартного правила) */
+.standards-media .std-front{
+  top: 40%;
+  transform: translateY(-72%);
+}
+
+
+/* ===== DIAGONAL SPLIT HERO ANIMATION ===== */
+.diag-mask {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.diag {
+  position: absolute;
+  inset: 0;
+  background: var(--brand);
+  transition: transform 1.6s cubic-bezier(.2,.8,.2,1);
+  will-change: transform;
+}
+
+/* левая половина — диагональный треугольник */
+.diag.left {
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  transform: translateX(0);
+}
+
+/* правая половина — обратный треугольник */
+.diag.right {
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  transform: translateX(0);
+}
+
+/* ===== открытие ===== */
+.diag-mask.open .diag.left {
+  transform: translateX(-100%);
+}
+.diag-mask.open .diag.right {
+  transform: translateX(100%);
+}
+
+

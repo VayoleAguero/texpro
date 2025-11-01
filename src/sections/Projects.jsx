@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ProjectModal from "../components/ProjectModal";
 
+/** ТВОЙ ЖЕ МАССИВ ПРОЕКТОВ — без изменений */
 const projects = [
   {
     title: "Квартира в ЖК Вавилов дом",
@@ -167,45 +168,92 @@ const projects = [
   },
 ];
 
+const STEP_MS = 4200; // период смены слайда
+const FADE_MS = 900;  // длительность кроссфейда/движения
+
 export default function Projects(){
+  const [idx, setIdx] = useState(0);
+  const [prev, setPrev] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [active, setActive] = useState(null);
+  const timerRef = useRef(0);
+
+  const side = (i) => (i % 2 ? "right" : "left");
+  const currSide = side(idx);
+  const prevSide = side(prev);
+
+  // амплитуда "влёта" клина — как в Hero
+  const fromX = useMemo(() => {
+    if (prevSide === currSide) return currSide === "right" ? 5 : -5;
+    return currSide === "right" ? 12 : -12;
+  }, [prevSide, currSide]);
+
+  useEffect(() => {
+    const next = () => {
+      setIdx((cur) => {
+        const n = (cur + 1) % projects.length;
+        setPrev(cur);
+        return n;
+      });
+    };
+    timerRef.current = window.setInterval(next, STEP_MS);
+    return () => window.clearInterval(timerRef.current);
+  }, []);
 
   const open = (p) => { setActive(p); setModalOpen(true); };
   const close = () => setModalOpen(false);
 
   return (
     <>
-      <div className="full-bleed" data-parallax data-strength="30">
-        <div className="projects full-bleed-padding inview-group in-view">
-          {projects.map((p,i)=>(
-            <button
+      <section
+        id="projects"
+        className="proj-auto section"
+        aria-label="Наши проекты"
+        style={{ ["--fade"]: `${FADE_MS}ms` }}
+      >
+        {projects.map((p, i) => {
+          const isActive = i === idx;
+          const isPrev   = i === ((idx - 1 + projects.length) % projects.length);
+          const bg = p.images?.[0] || "";
+          const s = side(i);
+
+          return (
+            <article
               key={i}
-              className="card levitate"
-              data-anim="scale-in"
-              data-delay={0.05*i}
-              onClick={()=>open(p)}
-              aria-label={`Открыть проект: ${p.title}`}
-              style={{cursor:'pointer'}}
+              className={[
+                "proj-panel",
+                isActive ? "is-active" : "",
+                isPrev ? "was-active" : "",
+              ].join(" ")}
+              aria-hidden={!isActive && !isPrev}
+              role="button"
+              tabIndex={isActive ? 0 : -1}
+              onClick={() => open(p)}
+              onKeyDown={(e)=> (e.key === "Enter" || e.key === " ") && open(p)}
             >
-              {/* слой с параллаксом и дрейфом */}
-              <div style={{ position:'relative', overflow:'hidden' }}>
-                <img
-                  src={p.images?.[0]}
-                  alt=""
-                  loading="lazy"
-                  data-speed="1.08"
-                  data-drift="0.6"
-                  data-parallax
-                  style={{ display:'block' }}
-                />
+              {/* фон фото */}
+              <img className="proj-bg smooth-zoom" src={bg} alt="" />
+              {/* изумрудный клин слева/справа */}
+              <div
+                className={`proj-overlay ${s === "right" ? "right" : "left"}`}
+                style={{ ["--fromX"]: `${fromX}%` }}
+              />
+              {/* карточка описания на изумрудном фоне */}
+              <div className={`proj-card ${s === "right" ? "right" : "left"}`}>
+                <h2 className="proj-title">{p.title}</h2>
+                <span className="proj-underline" />
+                <p className="proj-summary">{p.summary}</p>
+                {p.details?.length ? (
+                  <ul className="proj-list">
+                    {p.details.slice(0,3).map((d, k) => <li key={k}>{d}</li>)}
+                  </ul>
+                ) : null}
+                <div className="proj-cta">Открыть проект ↗</div>
               </div>
-              <div className="shade" />
-              <div className="caption">{p.title}</div>
-            </button>
-          ))}
-        </div>
-      </div>
+            </article>
+          );
+        })}
+      </section>
 
       <ProjectModal open={modalOpen} onClose={close} project={active} />
     </>
