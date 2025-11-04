@@ -1,0 +1,200 @@
+@layer components {
+  /* ===== HERO AUTO / LEGACY PANELS (оставляем для совместимости) ===== */
+  .hero-auto{
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero-auto__panel{
+    position:absolute; inset:0;
+    display:grid; place-items:center;
+    opacity: 0;
+    transition: opacity .35s ease;
+    pointer-events: none;
+  }
+  .hero-auto__panel.is-active{
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .hero-bg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    transform:scale(1.02);
+    filter:saturate(.96) contrast(1.02);
+  }
+  .hero-overlay{
+    position:absolute; inset:0 auto 0 0; width:66%; height:100%;
+    background:var(--brand);
+    clip-path:polygon(0 0, 90% 0, 75% 100%, 0% 100%);
+    transform: translate3d(var(--fromX, 0%), 0, 0);
+    transition: transform .45s cubic-bezier(.2,.8,.2,1);
+    z-index:1;
+  }
+  .hero-overlay.right{
+    left:auto; right:0;
+    clip-path:polygon(25% 0, 100% 0, 100% 100%, 10% 100%);
+  }
+  .hero-auto__panel.is-active .hero-overlay{ transform: translate3d(0,0,0); }
+
+  .hero-title{
+    position:relative; z-index:2; margin:0; color:#fff; font-weight:800; line-height:1.05;
+    text-shadow:0 2px 10px rgba(0,0,0,.15);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+    will-change:transform, opacity;
+  }
+  .hero-title--left{ justify-self:start; margin-left:clamp(16px,8vw,120px); }
+  .hero-title--right{ justify-self:end;   margin-right:clamp(16px,8vw,120px); }
+  .hero-title--lg{ font-size:clamp(38px,10vw,120px); }
+  .hero-title--mega{ font-size:clamp(72px,22vw,380px); letter-spacing:.02em; line-height:.9; text-transform:uppercase; font-weight:900; }
+  .hero-auto__panel:not(.is-active) .hero-title{ opacity:0; transform:translate3d(10px,0,0); }
+
+  /* ===== Split triangles block (финальный кадр) ===== */
+  .split-tri{ position:absolute; inset:0; overflow:hidden; isolation:isolate; }
+  .tri{ position:absolute; inset:0; background-size: cover; background-position: center;
+        will-change: transform, clip-path, opacity;
+        transition: transform .55s cubic-bezier(.2,.8,.2,1), opacity .35s ease; }
+  .tri-left { clip-path: polygon(0 0, 62% 0, 52% 100%, 0% 100%); transform: translate3d(-12%, 0, 0); }
+  .tri-right{ clip-path: polygon(48% 0, 100% 0, 100% 100%, 38% 100%); transform: translate3d(12%, 0, 0); }
+  .hero-auto__panel.is-active .tri-left,
+  .hero-auto__panel.is-active .tri-right{ transform: translate3d(0,0,0); }
+  .split-tri-divider{
+    position:absolute; left:50%; top:-2%;
+    width:10px; height:104%;
+    transform:translateX(-50%) skewX(-12deg);
+    background:rgba(255,255,255,.9);
+    box-shadow:0 0 0 1px rgba(0,0,0,.06) inset;
+    pointer-events:none;
+  }
+
+  /* ===== DIAGONAL SPLIT HERO — полный таймлайн ===== */
+  .hero-cinema{
+    position: relative;
+    height: min(100vh, 920px);
+    min-height: 540px;
+    background: var(--brand);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* мульти-фото (фазы 1–3) */
+  .hero-cinema__photo{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    transform: scale(1.045);
+    filter: saturate(.98) contrast(1.02);
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hero-cinema__photo.p1{ animation: heroPhoto1 var(--heroDur) linear infinite; }
+  .hero-cinema__photo.p2{ animation: heroPhoto2 var(--heroDur) linear infinite; }
+  .hero-cinema__photo.p3{ animation: heroPhoto3 var(--heroDur) linear infinite; }
+
+  /* Фазовая сетка:
+     0–20%   апертура/разлёт (виден p1 с 8%)
+     20–34%  трапеция + «ИСКУССТВО» (p2)
+     34–44%  заполнение трапецией (p3)
+     44–62%  бегущая строка (brand фон)
+     62–78%  белый экран + подпись
+     78–100% схлоп створок (brand фон)
+  */
+  @keyframes heroPhoto1{ 0%,7%{opacity:0} 8%{opacity:1} 19%{opacity:1} 20%,100%{opacity:0} }
+  @keyframes heroPhoto2{ 0%,19%{opacity:0} 20%{opacity:1} 33%{opacity:1} 34%,100%{opacity:0} }
+  @keyframes heroPhoto3{ 0%,33%{opacity:0} 34%{opacity:1} 43%{opacity:1} 44%,100%{opacity:0} }
+
+  /* Диагональ + створки (открытие) */
+  .diag-seq, .diag-close{ position:absolute; inset:0; z-index: 2; pointer-events:none; }
+  .diag-line{ position:absolute; inset:0; width:100%; height:100%; opacity: 0; mix-blend-mode: screen; }
+  .diag-line line{ stroke: #fff; stroke-width: 0.9; vector-effect: non-scaling-stroke; }
+  .diag-half{ position:absolute; inset:0; background: var(--brand); clip-path: polygon(0 0, 100% 0, 0 100%); transform: translate3d(0,0,0); }
+  .diag-half.right{ clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
+  .diag-seq .diag-half.left{  animation: triLeftOpen  var(--heroDur) cubic-bezier(.2,.8,.2,1) infinite; }
+  .diag-seq .diag-half.right{ animation: triRightOpen var(--heroDur) cubic-bezier(.2,.8,.2,1) infinite; }
+  .diag-seq .diag-line{        animation: diagLine     var(--heroDur) ease-out                    infinite; }
+
+  .diag-close .diag-half.left{  animation: triLeftClose  var(--heroDur) cubic-bezier(.2,.8,.2,1) infinite; }
+  .diag-close .diag-half.right{ animation: triRightClose var(--heroDur) cubic-bezier(.2,.8,.2,1) infinite; }
+
+  @keyframes diagLine{ 0%{opacity:0} 4%{opacity:1} 12%{opacity:1} 20%{opacity:0} 100%{opacity:0} }
+  @keyframes triLeftOpen{ 0%{transform:translateX(0)} 12%{transform:translateX(-10%)} 20%{transform:translateX(-100%)} 100%{transform:translateX(-100%)} }
+  @keyframes triRightOpen{ 0%{transform:translateX(0)} 12%{transform:translateX(10%)} 20%{transform:translateX(100%)} 100%{transform:translateX(100%)} }
+
+  @keyframes triLeftClose{ 0%,76%{transform:translateX(-100%)} 84%{transform:translateX(-10%)} 100%{transform:translateX(0)} }
+  @keyframes triRightClose{ 0%,76%{transform:translateX(100%)} 84%{transform:translateX(10%)} 100%{transform:translateX(0)} }
+
+  /* Трапеции + текст */
+  .label-band{
+    position:absolute; inset:auto 0 18%; left: 0;
+    width: 72%;
+    height: clamp(64px, 12vw, 140px);
+    background: linear-gradient(90deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+    color:#0a0e0e;
+    clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
+    display:grid; place-items:center;
+    z-index: 3;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: bandAppear var(--heroDur) ease-out infinite;
+  }
+  .label-band.second{
+    inset: 10% 0 auto auto;
+    left: auto; right: 0;
+    width: 64%;
+    background: linear-gradient(90deg, rgba(255,255,255,.98), rgba(255,255,255,.9));
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+    animation-name: bandSecondAppear;
+  }
+  .label-text{ font-weight: 900; letter-spacing: .6px; font-size: clamp(28px, 6vw, 64px); text-transform: uppercase; }
+  .label-text.small{ font-size: clamp(22px, 4.8vw, 40px); }
+
+  @keyframes bandAppear{ 0%,18%{opacity:0;transform:translateY(16px)} 20%{opacity:1;transform:translateY(0)} 33%{opacity:1} 34%,100%{opacity:0;transform:translateY(-6px)} }
+  @keyframes bandSecondAppear{ 0%,61%{opacity:0;transform:translateY(18px)} 62%{opacity:1;transform:translateY(0)} 75%{opacity:1} 76%,100%{opacity:0;transform:translateY(-8px)} }
+
+  .band-fill{
+    position:absolute; inset:auto 0 18% 0;
+    height: clamp(64px, 12vw, 140px);
+    background:#fff;
+    z-index: 2;
+    transform-origin: left center;
+    opacity: 0;
+    clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
+    animation: bandGrow var(--heroDur) cubic-bezier(.4,0,.2,1) infinite;
+  }
+  @keyframes bandGrow{ 0%,33%{opacity:0;transform:scaleX(1)} 34%{opacity:1} 44%{opacity:1;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)} 45%,100%{opacity:0} }
+
+  /* Бегущая строка */
+  .marquee-phase{
+    position:absolute; inset:0;
+    background: var(--brand);
+    z-index: 1;
+    opacity: 0;
+    animation: marqueePhase var(--heroDur) linear infinite;
+    display:flex; align-items:flex-end; padding-bottom: 10%;
+  }
+  @keyframes marqueePhase{ 0%,43%{opacity:0} 44%{opacity:1} 62%{opacity:1} 63%,100%{opacity:0} }
+  .marquee-track{
+    width: 100%;
+    overflow:hidden;
+    color:#fff; font-weight: 800;
+    font-size: clamp(46px, 7vw, 120px);
+    text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; will-change: transform;
+  }
+  /* Заметь: один прогон можно задать в React через animationIterationCount=1, но по ТЗ мы крутим общий таймлайн бесконечно.
+     Чтобы «СТРОИТЬ» проходило единично внутри фазы — ставь длинную длительность и паузу кадрами в JS. */
+  .marquee-track span{
+    display:inline-block; padding-right: 2ch;
+    animation: marqueeScroll calc(var(--heroDur) * 0.7) linear infinite;
+  }
+  @keyframes marqueeScroll{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* Белый экран */
+  .white-screen{
+    position:absolute; inset:0; background:#fff; z-index: 0; opacity: 0;
+    animation: whitePhase var(--heroDur) linear infinite;
+  }
+  @keyframes whitePhase{ 0%,61%{opacity:0} 62%{opacity:1} 75%{opacity:1} 76%,100%{opacity:0} }
+}

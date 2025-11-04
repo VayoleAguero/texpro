@@ -1,0 +1,9 @@
+@layer overrides {
+  /* Мелкие правки поверх всего.
+     Пример: временный z-index для разделителя в split-tri
+     .split-tri-divider{ z-index: 3; }
+  */
+
+  /* Footer (не создаём отдельный файл ради пары правил) */
+  .footer { text-align:center; color:#6b7280; padding:40px 0; }
+}

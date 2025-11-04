@@ -1,3 +1,4 @@
+// src/sections/Standards.jsx
 export default function Standards() {
   return (
     <section
@@ -6,22 +7,28 @@ export default function Standards() {
       aria-label="Система стандартов"
     >
       <div className="standards-grid">
-        {/* Левый медиа-блок */}
-        <div className="standards-media standards-media--lift">
+        {/* ЛЕВЫЙ МЕДИА-БЛОК: фон + малое фото поверх */}
+        <div className="standards-media">  {/* <-- без standards-media--lift */}
+          <img
+            className="std-bg"
+            src="wp-content/uploads/2023/12/Standards_bg.jpg"
+            alt=""
+            loading="lazy"
+          />
           <img
             className="std-front"
-            src="https://images.unsplash.com/photo-1484100356142-db6ab6244067?q=80&w=1600&auto=format&fit=crop"
+            src="wp-content/uploads/2023/12/Standards_up.jpg"
             alt=""
             loading="lazy"
           />
         </div>
 
-        {/* Правый текстовый блок */}
-        <div className="standards-card">
+        {/* ПРАВЫЙ ТЕКСТ */}
+        <div className="standards-card standards-card--ghost">
           <h2 className="standards-title">Система стандартов</h2>
           <span className="st-title-underline" aria-hidden="true" />
           <ul className="standards-list">
-            <li>Соблюдение строительных норм и правил (СниП)</li>
+            <li>Соблюдение строительных норм и правил (СНиП)</li>
             <li>Многоступенчатый контроль — Директор-Инженер-Прораб-Бригадир</li>
             <li>Страхование объектов</li>
             <li>Отчётность и соблюдение договорных обязательств</li>

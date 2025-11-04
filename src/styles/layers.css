@@ -1,0 +1,2 @@
+/* Объявление слоёв (порядок каскада) */
+@layer base, components, utilities, overrides;

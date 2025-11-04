@@ -48,10 +48,6 @@ export default function App() {
         {/* СИСТЕМА СТАНДАРТОВ — без обёртки .section для full-bleed */}
         <Standards />
 
-        {/* Philosophy */}
-        <section id="philosophy" className="section">
-          <Philosophy />
-        </section>
 
         {/* Why Us / Features */}
         <section id="why-us" className="section">

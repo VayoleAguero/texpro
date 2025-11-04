@@ -1,0 +1,37 @@
+@layer components {
+  .viewer-overlay{
+    position: fixed; inset:0;
+    background: rgba(0,0,0,.9);
+    z-index: 999;
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .viewer-inner{ width: min(1400px, 96vw); display:flex; flex-direction:column; gap: 12px; }
+  .viewer-main{ position: relative; display:grid; place-items:center; min-height: 60vh; background: transparent; }
+  .viewer-main img{ max-width: 95vw; max-height: 78vh; object-fit: contain; border-radius: 10px; box-shadow: 0 30px 60px rgba(0,0,0,.45); }
+
+  .viewer-nav{
+    position:absolute; top:50%; transform: translateY(-50%);
+    width:56px; height:56px; border:none; border-radius:50%;
+    background: rgba(255,255,255,.92); cursor:pointer; font-size:34px; display:grid; place-items:center;
+  }
+  .viewer-nav:hover{ background:#fff; box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+  .viewer-nav.prev{ left: 14px; }
+  .viewer-nav.next{ right: 14px; }
+
+  .viewer-close{
+    position: fixed; top:12px; right:16px;
+    width:44px; height:44px; border-radius:8px; border:none;
+    background: #fff; color:#111; font-size:28px; cursor:pointer; box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+  .viewer-close:hover{ background:#f4f4f4; }
+
+  .viewer-thumbs{ display:flex; gap:12px; padding: 12px 0 0; overflow-x: auto; }
+  .viewer-thumb{
+    border:none; padding:0; cursor:pointer; background:transparent;
+    width:120px; height:80px; border-radius:8px; overflow:hidden;
+    outline: 2px solid transparent; outline-offset: 2px;
+  }
+  .viewer-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .viewer-thumb.active{ outline-color:#10b981; }
+}

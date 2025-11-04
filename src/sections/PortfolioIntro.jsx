@@ -19,14 +19,14 @@ export default function PortfolioIntro() {
           {/* большой фон (право) */}
           <img
             className="pi-bg"
-            src="https://images.unsplash.com/photo-1529694157871-05969a175f1a?q=80&w=2400"
+            src="wp-content/uploads/2023/12/Portfolio_bg.jpg"
             alt=""
             loading="lazy"
           />
           {/* передняя карточка (слева-внизу) */}
           <img
             className="pi-front"
-            src="https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1600"
+            src= "wp-content/uploads/2023/12/Portfolio_up.png"
             alt="Фрагмент проекта"
             loading="lazy"
           />

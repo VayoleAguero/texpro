@@ -1,0 +1,26 @@
+@layer base {
+  :root{
+    --brand: #102B30;              /* тёмный изумруд */
+    --brand-weak: #163D43;
+    --header-h: 128px;
+    --edge-zone: 28px;
+
+    --pad-section-desktop: 160px;
+    --pad-section-tablet: 120px;
+    --pad-section-mobile: 80px;
+
+    --tv-size: clamp(18px, 2.2vw, 28px);
+    --tv-size-lg: clamp(36px, 4.4vw, 56px);
+
+    --standards-overlap: 120px;
+  }
+
+  /* Глобальный шрифт */
+  @font-face{
+    font-family: "DejaVu Sans";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: local("DejaVu Sans"), local("DejaVuSans");
+  }
+}

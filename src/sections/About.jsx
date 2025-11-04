@@ -3,10 +3,10 @@ export default function About() {
     <section id="about" className="about full-bleed" aria-label="О нас">
       <div className="about-grid full-bleed-padding">
         {/* LEFT COPY */}
-        <div className="about-copy">
-          <h2 className="about-h">О НАС</h2>
-          <span className="about-rule" aria-hidden="true" />
-          <p className="about-lead">
+        <div className="about-copy reveal-group">
+          <h2 className="about-h reveal-fade">О НАС</h2>
+          <span className="about-rule reveal-slide" aria-hidden="true" />
+          <p className="about-lead reveal-fade">
             Техника пространства основана группой креативных московских
             архитекторов-дизайнеров и командой профессионалов в области
             строительных технологий. Мы создаем эстетичные пространства,
@@ -14,7 +14,7 @@ export default function About() {
             реализации проекта
           </p>
 
-          <div className="about-stat">
+          <div className="about-stat reveal-zoom">
             <div className="about-stat-n">200+</div>
             <div className="about-stat-t">
               реализованных
@@ -24,18 +24,16 @@ export default function About() {
         </div>
 
         {/* RIGHT VISUAL */}
-        <div className="about-visual">
-          {/* Большое фото на заднем плане */}
+        <div className="about-visual reveal-group">
           <img
-            className="about-bg"
-            src="https://images.unsplash.com/photo-1613541444690-460e5d6a3d32?q=80&w=2400&auto=format&fit=crop"
+            className="about-bg reveal-fade"
+            src="wp-content/uploads/2023/12/AboutLower.jpg"
             alt=""
             loading="lazy"
           />
-          {/* Квадрат поверх слева */}
           <img
-            className="about-fore"
-            src="https://images.unsplash.com/photo-1535905748047-14b20a516d79?q=80&w=1600&auto=format&fit=crop"
+            className="about-fore reveal-zoom"
+            src="wp-content/uploads/2023/12/AoutUpper.jpg"
             alt=""
             loading="lazy"
           />

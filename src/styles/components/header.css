@@ -1,0 +1,54 @@
+@layer components {
+  .header {
+    position: fixed; inset: 0 0 auto 0; height: var(--header-h); z-index: 40;
+    background: var(--brand);
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  .header.scrolled { box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+
+  .header-inner {
+    height: var(--header-h);
+    display:flex; align-items:center; justify-content:space-between;
+    width:100%;
+    padding: 0 12px;
+    padding-right: 88px; /* место под бургер */
+  }
+
+  .logo { display:flex; align-items:center; gap:14px; font-weight:600; letter-spacing:.5px; font-size:20px; color:#fff; }
+  .logo-link { position: relative; display:flex; align-items:center; gap:14px; color:#fff; text-decoration:none; }
+  .logo-img { height: 56px; width: auto; display:block; object-fit: contain; }
+  @media (max-width: 640px){ .logo-img { height: 44px; } }
+
+  .burger {
+    position: fixed;
+    right: 10px;
+    top: calc(var(--header-h) / 2);
+    transform: translateY(-50%);
+    width:56px; height:56px;
+    display:grid; place-items:center;
+    border:none; background:transparent; cursor: pointer;
+    z-index: 60;
+  }
+  .burger span { display:block; width:28px; height:3px; background:#fff; position:relative; border-radius:2px; }
+  .burger span::after { content:""; position:absolute; left:0; right:0; top:8px; height:3px; background:#fff; border-radius:2px; }
+
+  .header-spacer { height: var(--header-h); }
+
+  /* Лого-анимации */
+  .logo-stack{ display:inline-flex; flex-direction:column; align-items:flex-start; line-height:1; }
+  .logo-text { display:inline-block; }
+  .logo-line{
+    display:block; height:2px; width:100%; background:#fff; border-radius:2px;
+    transform-origin:left center; transform:scaleX(0); opacity:0; margin-top:6px;
+  }
+  @keyframes spin360 { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+  @keyframes logoTextIn { from{transform:translateX(-12px);opacity:0} to{transform:translateX(0);opacity:1} }
+  @keyframes logoLineDraw { from{transform:scaleX(0);opacity:0} to{transform:scaleX(1);opacity:1} }
+  @keyframes pop { 0%{transform:translateY(0) scale(1)} 40%{transform:translateY(-4px) scale(1.03)} 100%{transform:translateY(0) scale(1)} }
+  .logo.logo-anim .logo-text { animation: logoTextIn .5s cubic-bezier(.2,.8,.2,1) .35s both; }
+  .logo.logo-anim .logo-line { animation: logoLineDraw .45s ease .6s both; }
+  .logo.logo-hover-pop{ animation: pop .45s ease-out both; }
+
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+}

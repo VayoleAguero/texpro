@@ -1,0 +1,44 @@
+@layer components {
+  /* Старые «features» */
+  .features { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding:0 0; }
+  .feature { text-align:center; }
+  .feature .icon { width:64px; height:64px; margin:0 авто 16px; border:2px solid #059669; border-radius:50%; }
+  .feature-card{ transition: transform .35s ease, box-shadow .35s ease; }
+  .feature-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,.16); }
+
+  /* Кольца */
+  .features-circles{ background:#fff; padding: clamp(36px, 6vw, 90px) 0; }
+  .features-circles__grid{
+    max-width: 1220px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 24px);
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: clamp(24px, 6vw, 140px); align-items: start; text-align: center;
+  }
+  .features-circles__item{ display:flex; flex-direction: column; align-items: center; justify-content: start; }
+  .features-circles__ico{
+    width: clamp(92px, 10vw, 120px); height: clamp(92px, 10vw, 120px);
+    border-radius: 50%; border: 3px solid #2AA36B; display: grid; place-items: center;
+    margin: 0 0 clamp(12px, 2.2vw, 18px); transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .features-circles__ico svg{ width: clamp(30px, 4.2vw, 44px); height: clamp(30px, 4.2vw, 44px); stroke: #2AA36B; fill: none; stroke-width: 2.4; vector-effect: non-scaling-stroke; }
+  .features-circles__label{ font-weight: 600; font-size: clamp(16px, 2.2vw, 22px); letter-spacing: .2px; color:#141A1A; text-transform: lowercase; }
+  .features-circles__item:hover .features-circles__ico{ transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,.08); }
+  @media (max-width: 820px){ .features-circles__grid{ grid-template-columns: 1fr; gap: 28px; } }
+
+  /* Зелёные кольца (без карточек) */
+  .features-band{ background: #fff; color:#0a0e0e; padding: clamp(40px, 6vw, 80px) 0; }
+  .features-grid{ max-width: 1240px; margin:0 авто; padding:0 24px; }
+  .features-grid--rings{
+    display:grid; grid-template-columns: repeat(3, 1fr);
+    gap: clamp(20px, 3.5vw, 40px); align-items: start; text-align: center;
+  }
+  @media (max-width: 900px){ .features-grid--rings{ grid-template-columns: 1fr; } }
+  .feature--ring{ padding: clamp(6px, 1.2vw, 10px); }
+  .feature-ring{
+    width: clamp(120px, 9vw, 140px); height: clamp(120px, 9vw, 140px);
+    margin: 0 auto 14px; border: 2px solid #059669; border-radius: 50%;
+    display:grid; place-items:center;
+  }
+  .feature-ring__icon svg{ width: 34px; height: 34px; color:#059669; }
+  .feature--ring h3{ margin: 10px 0 6px; font-weight: 800; letter-spacing:.3px; font-size: clamp(18px, 2.2vw, 22px); }
+  .feature--ring p{ margin:0 auto; max-width: 420px; color:#374151; font-size: clamp(14px, 1.6vw, 16px); line-height: 1.45; }
+}

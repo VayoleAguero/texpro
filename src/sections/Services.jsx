@@ -1,10 +1,10 @@
 import useInViewLoop from "../hooks/useInViewLoop";
 
 const items = [
-  { title: "Проектирование",   img: "wp-content/uploads/2023/12/proj.jpeg" },
-  { title: "Дизайн-интерьера", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2400" },
-  { title: "Ремонт и отделка", img: "wp-content/uploads/2023/12/remont.jpeg" },
-  { title: "Авторский надзор", img: "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=2400" },
+  { title: "Проектирование",   img: "wp-content/uploads/2023/12/Services1.png" },
+  { title: "Дизайн-интерьера", img: "wp-content/uploads/2023/12/Services5.png" },
+  { title: "Ремонт и отделка", img: "wp-content/uploads/2023/12/Services3.jpg" },
+  { title: "Авторский надзор", img: "wp-content/uploads/2023/12/Services4.jpg" },
 ];
 
 export default function Services(){

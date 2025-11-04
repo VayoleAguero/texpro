@@ -1,0 +1,22 @@
+@layer utilities {
+  .levitate {
+    will-change: transform, box-shadow, filter;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease, filter .5s ease, opacity .35s ease;
+  }
+  .levitate:hover {
+    transform: translateY(-10px) scale(1.035);
+    box-shadow: 0 28px 60px rgba(0,0,0,.28);
+    filter: saturate(1.05) contrast(1.02);
+  }
+  .levitate-tilt {
+    transform-style: preserve-3d; perspective: 900px;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease, filter .5s ease;
+  }
+  .levitate-tilt:hover {
+    transform: translateY(-10px) scale(1.03) rotate3d(1,-1,0, 2.2deg);
+    box-shadow: 0 28px 60px rgba(0,0,0,.28);
+  }
+  .float-caption { transform: translateY(10px); opacity: .85; transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .45s ease; }
+  .levitate:hover .float-caption,
+  .levitate-tilt:hover .float-caption { transform: translateY(0); opacity: 1; }
+}

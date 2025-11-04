@@ -1,0 +1,15 @@
+@layer components {
+  .form { max-width:720px; margin:0 auto; display:grid; gap:12px; }
+  .input { padding:12px 14px; border:1px solid #e5e7eb; border-radius:8px; font-size:16px; }
+  .button { margin-top:8px; padding:12px 18px; border-radius:8px; background:#059669; color:#fff; border:none; cursor:pointer; }
+  .button:hover { background:#10b981; }
+
+  /* Контакт-блок на главной */
+  .contact-section{ padding-top: 60px; }
+  .contact-section .contact-title{
+    margin: 0 0 12px; font-size: clamp(28px, 4vw, 40px); font-weight: 800; text-align: left; padding: 0 24px;
+  }
+  .contact-section .form{ max-width: 520px; margin: 0; padding-left: 24px; }
+  .contact-section .input{ padding: 10px 12px; font-size: 15px; }
+  .contact-section .button{ padding: 10px 16px; }
+}
