@@ -343,14 +343,8 @@ a { color: inherit; text-decoration: none; }
 .in-view .reveal-zoom{ opacity: 1; transform: translateY(0) scale(1); }
 
 /* ===== SERVICES: default dark → hover brighten + grow (по ТЗ) ===== */
-.services-section{
-  background: var(--brand);
-  padding-top: 0;
-  margin-top: 0;
-}
-.services-section .tiles{ background: var(--brand); }
-
 .services-section .tile .visual img{
+  /* затемняем по умолчанию */
   filter: brightness(.68) saturate(.92) contrast(1.02);
   transform: scale(1.02);
   transition: transform .45s cubic-bezier(.2,.8,.2,1), filter .45s ease;
@@ -389,24 +383,101 @@ a { color: inherit; text-decoration: none; }
   filter: saturate(1.02) contrast(1.02);
   z-index: 5;
 }
-@media (max-width: 1400px){
-  .tiles-tall .tile{ height: calc(92vh - var(--header-h)); min-height: 640px; }
-}
-@media (max-width: 1200px){
-  .tiles-tall .tile{ height: calc(86vh - var(--header-h)); min-height: 560px; }
-}
-@media (max-width: 900px){
-  .tiles{ grid-template-columns: repeat(2, 1fr); }
-  .tiles-tall .tile{ height: calc(78vh - var(--header-h)); min-height: 480px; }
-}
 @media (max-width: 640px){
-  .tiles{ grid-template-columns: 1fr; }
-  .tiles-tall .tile{ height: calc(72svh - 12px); min-height: 420px; }
   .services-section .tile .visual img{ transform: scale(1.01); }
   .services-section .tile:hover .visual img,
   .services-section .tile:focus-within .visual img{ transform: scale(1.04); }
   .services-section .tile:hover .title,
   .services-section .tile:focus-within .title{ transform: translateY(0) scale(1.06); }
+}
+
+
+/* ===== SERVICES — вертикальные подписи и плавность ===== */
+.service-tile { overflow: visible; }
+
+.service-visual{
+  position: relative;
+  height: 100%;
+  transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, filter .35s ease;
+  will-change: transform;
+  overflow: hidden;
+  background:#000;
+  border-right: 1px solid rgba(255,255,255,.06);
+}
+/* БЛИК слева — показываем при ховере */
+.service-visual::before{
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: clamp(12px, 3.5vw, 64px);
+  background: linear-gradient(90deg,
+              rgba(255,255,255,.65) 0%,
+              rgba(255,255,255,.35) 35%,
+              rgba(255,255,255,0) 100%);
+  opacity: 0;
+  transform: translateX(-18%);
+  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+  z-index: 1; /* ниже текста, выше картинки */
+}
+.services-section .tile:hover .service-visual::before,
+.services-section .tile:focus-within .service-visual::before{
+  opacity: .9;
+  transform: translateX(0);
+}
+
+.service-visual img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  transform: scale(1.04);
+  filter: saturate(.96) contrast(1.02);
+  transition: transform .6s cubic-bezier(.2,.8,.2,1), filter .6s ease, opacity .6s ease;
+}
+
+/* лёгкая тень у нижней кромки для читаемости на любых фото */
+.service-shade{
+  position:absolute; left:0; right:0; bottom:0; height:36%;
+  background: linear-gradient(to top, rgba(0,0,0,.42), rgba(0,0,0,0));
+  pointer-events:none;
+  transition: opacity .35s ease;
+}
+
+/* вертикальная подпись */
+.title-vert{
+  position:absolute; left:12px; top:12px; bottom:12px; width:auto;
+  display:flex; align-items:flex-end; /* текст снизу вверх */
+  z-index:2; pointer-events:none;
+}
+.title-vert span{
+  writing-mode: vertical-rl;      /* вертикальная вёрстка */
+  text-orientation: mixed;
+  transform: rotate(180deg);      /* читаем снизу вверх по левой стороне */
+  color:#fff;
+  font-weight:800;
+  letter-spacing:.5px;
+  font-size: var(--tv-size);      /* БАЗОВЫЙ РАЗМЕР */
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+  opacity:.95;
+  /* увеличиваем шрифт (а не scale) — не двигаем позицию */
+  transition: font-size .35s ease, opacity .35s ease;
+}
+
+/* hover: картинка/тень + текст просто становится крупнее */
+.service-visual:hover{
+  transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1.06);
+  box-shadow: 0 28px 72px rgba(0,0,0,.28);
+  filter: saturate(1.02) contrast(1.02);
+  z-index: 5;
+}
+.service-visual:hover img{ transform: scale(1.08); filter: saturate(1.05) contrast(1.05); }
+.service-visual:hover .service-shade{ opacity:.55; }
+.service-visual:hover .title-vert span{ opacity:1; }
+
+/* именно тут — переключение на «в 2 раза» */
+.services-section .tile:hover .title-vert span,
+.services-section .tile:focus-within .title-vert span{
+  font-size: var(--tv-size-lg);
 }
 
 /* =========================================================
