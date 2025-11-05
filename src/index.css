@@ -2,7 +2,7 @@
    GLOBAL / TOKENS
 ========================================================= */
 :root{
-  --brand: #102B30;              /* тёмный изумруд как в референсе */
+  --brand: #01241d;              /* тёмный изумруд как в референсе */
   --brand-weak: #163D43;         /* полутон светлее, если понадобится */
                                   /*  08241E - цвет чуть потемнее для хедера */
   --header-h: 128px;
@@ -26,11 +26,11 @@
 
 /* ===== Global font: DejaVu Sans ===== */
 @font-face{
-  font-family: "DejaVu Sans";
+  font-family: "CaviarDreams";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: local("DejaVu Sans"), local("DejaVuSans");
+  src: local("DejaVu Sans"), local("CaviarDreams");
 }
 
 * { box-sizing: border-box; }
@@ -1379,4 +1379,464 @@ a { color: inherit; text-decoration: none; }
   62%     { opacity: 1; }
   75%     { opacity: 1; }
   76%,100%{ opacity: 0; }
+}
+
+/* 0) Базовые переменные высот плиток */
+:root{
+  /* уже есть твои токены... */
+  --tile-h-desktop: 720px;
+  --tile-h-1200:   560px;
+  --tile-h-640:    420px;
+}
+
+/* 1) Подключаем переменные к текущим правилам высоты плиток */
+.tile{
+  position:relative;
+  height: var(--tile-h-desktop);          /* было: 720px */
+  overflow: visible;
+  background:#0b0f0f;
+  perspective:900px;
+}
+@media (max-width:1200px){ .tile{ height: var(--tile-h-1200); } }  /* было: 560px */
+@media (max-width:640px){ 
+  .tiles{ grid-template-columns:1fr; }
+  .tile{ height: var(--tile-h-640); }                              /* было: 420px */
+}
+
+/* 2) Модификатор «минус 20%» */
+.tiles--shrink20{
+  /* уменьшаем высоту на 20% на всех брейкпоинтах */
+  --tile-h-desktop: calc(720px * .8);
+  --tile-h-1200:   calc(560px * .8);
+  --tile-h-640:    calc(420px * .8);
+  /* чуть увеличим межплиточный воздух, чтобы композиция не «схлопнулась» */
+  gap: 12px; /* было 0 у .tiles; если хочешь оставить 0 — убери эту строку */
+}
+
+/* 3) Если где-то используешь «высокие» плитки (tiles-tall) — тоже сожмём на 20% */
+.tiles--shrink20.tiles-tall .tile{
+  height: calc((100vh - var(--header-h) - 32px) * .8);
+  min-height: calc(720px * .8);
+}
+@media (max-width: 1400px){
+  .tiles--shrink20.tiles-tall .tile{ 
+    height: calc((92vh - var(--header-h)) * .8); 
+    min-height: calc(640px * .8);
+  }
+}
+@media (max-width: 1200px){
+  .tiles--shrink20.tiles-tall .tile{ 
+    height: calc((86vh - var(--header-h)) * .8); 
+    min-height: calc(560px * .8);
+  }
+}
+@media (max-width: 900px){
+  .tiles--shrink20 .tiles{ grid-template-columns: repeat(2, 1fr); } /* как и было */
+  .tiles--shrink20.tiles-tall .tile{ 
+    height: calc((78vh - var(--header-h)) * .8); 
+    min-height: calc(480px * .8);
+  }
+}
+@media (max-width: 640px){
+  .tiles--shrink20 .tiles{ grid-template-columns: 1fr; }
+  .tiles--shrink20.tiles-tall .tile{ 
+    height: calc((72svh - 12px) * .8); 
+    min-height: calc(420px * .8);
+  }
+}
+
+/* 4) (опционально) немного уменьшить титры, чтобы визуально не «перекрикивали» уменьшенную плитку */
+.tiles--shrink20 .tile .title{ font-size: 22px; } /* было 24px */
+.tiles--shrink20 .title-vert span{
+  font-size: calc(var(--tv-size) * .9);
+}
+@media (hover:hover){
+  .tiles--shrink20 .services-section .tile:hover .title-vert span{
+    font-size: calc(var(--tv-size-lg) * .9);
+  }
+}
+
+
+/* вплотную и одинаковая высота */
+.logo-link{ gap:0; align-items:center; }
+.logo-img{ height:56px; }
+.logo-text-img{
+  height:56px;
+  width:auto;
+  display:block;
+  opacity:0;
+  transform: translateX(44vw);
+  transform-origin:left center;
+  will-change: transform, opacity;
+  /* ключ: компенсируем левый отступ внутри SVG */
+  margin-left: -10px;  /* при необходимости подстрой -6…-14px */
+}
+
+/* мобильный размер */
+@media (max-width:640px){
+  .logo-img{ height:44px; }
+  .logo-text-img{ height:44px; margin-left:-8px; } /* чуть мягче на мобиле */
+}
+
+/* анимация въезда */
+@keyframes logoTextSlide {
+  from { transform: translateX(44vw); opacity:0; }
+  to   { transform: translateX(0);    opacity:1; }
+}
+.logo.logo-anim .logo-text-img{
+  animation: logoTextSlide .35s cubic-bezier(.2,.8,.2,1) .05s both;
+}
+
+/* насколько «заезжает» текст на иконку */
+:root{ --logo-overlap:-110px; }          /* подгони: -8…-20px */
+
+/* иконка и текст рядом */
+.logo-link{ gap:0; align-items:center; position:relative; }
+.logo-img{ height:56px; position:relative; z-index:1; }
+.logo-text-img{
+  height:56px; width:auto; display:block;
+  opacity:0;
+  /* старт: далеко справа; финиш: с небольшим наездом на иконку */
+  transform: translateX(44vw);
+  will-change: transform, opacity;
+  position:relative; z-index:2;          /* текст поверх иконки */
+}
+
+/* мобильный размер */
+@media (max-width:640px){
+  .logo-img{ height:44px; }
+  .logo-text-img{ height:44px; }
+  :root{ --logo-overlap:-10px; }         /* помягче на мобилке */
+}
+
+/* Анимация: едет к overlap, а не к 0 */
+@keyframes logoTextSlide {
+  from { transform: translateX(44vw); opacity:0; }
+  to   { transform: translateX(var(--logo-overlap)); opacity:1; }
+}
+.logo.logo-anim .logo-text-img{
+  animation: logoTextSlide .35s cubic-bezier(.2,.8,.2,1) .05s both;
+}
+
+
+/* Projects hero: «голый» текст без рамки и коробки */
+.proj-auto .proj-card{
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;               /* убираем «внутреннюю рамку» */
+}
+
+/* Читаемость текста на любом фото/клине */
+.proj-auto .proj-title{
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+.proj-auto .proj-summary,
+.proj-auto .proj-list,
+.proj-auto .proj-cta{
+  text-shadow: 0 1px 6px rgba(0,0,0,.28);
+}
+
+/* Подчёркивание оставляем как акцент, без коробки вокруг */
+.proj-auto .proj-underline{
+  background: rgba(255,255,255,.92);
+}
+
+/* Доступность: вместо рамки при фокусе подчёркиваем заголовок */
+.proj-auto .proj-panel:focus-visible .proj-title{
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ===== SERVICES: фон — #01241d ===== */
+.services-section{
+  background: #01241d !important;
+}
+.services-section .tiles{
+  background: #01241d !important;
+}
+
+/* ===== SERVICES: плитки на 20% меньше ===== */
+/* фиксированные высоты ↓ */
+.services-section .tile{ height: 576px; }              /* было 720px */
+@media (max-width:1200px){
+  .services-section .tile{ height: 448px; }            /* было 560px */
+}
+@media (max-width:640px){
+  .services-section .tile{ height: 336px; }            /* было 420px */
+}
+
+/* если активен режим .tiles-tall — уменьшаем пропорционально */
+.services-section .tiles-tall .tile{
+  height: calc((100vh - var(--header-h) - 32px) * .8);
+  min-height: 576px;                                   /* 720 * .8 */
+}
+@media (max-width:1400px){
+  .services-section .tiles-tall .tile{
+    height: calc((92vh - var(--header-h)) * .8);
+    min-height: 512px;                                 /* 640 * .8 */
+  }
+}
+@media (max-width:1200px){
+  .services-section .tiles-tall .tile{
+    height: calc((86vh - var(--header-h)) * .8);
+    min-height: 448px;                                 /* 560 * .8 */
+  }
+}
+@media (max-width:900px){
+  .services-section .tiles-tall .tile{
+    height: calc((78vh - var(--header-h)) * .8);
+    min-height: 384px;                                 /* 480 * .8 */
+  }
+}
+@media (max-width:640px){
+  .services-section .tiles-tall .tile{
+    height: calc((72svh - 12px) * .8);
+    min-height: 336px;                                 /* 420 * .8 */
+  }
+}
+
+/* CTA под services: прижать текст максимально вправо */
+.services-section + .emerald-cta .emerald-cta-inner{
+  text-align: right !important;
+  padding-right: 0 !important;   /* убираем внутренний отступ справа */
+  padding-left: 24px !important;
+}
+.services-section + .emerald-cta .emerald-cta-line{
+  text-align: right !important;
+  margin-left: auto !important;  /* тянем к правому краю */
+  margin-right: 0 !important;
+}
+
+
+/* CTA под services — прижать текст к правому краю экрана */
+.services-section + .emerald-cta{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.services-section + .emerald-cta .emerald-cta-inner{
+  max-width: none !important;   /* убираем 1280px контейнер */
+  width: 100% !important;
+  margin: 0 !important;         /* убираем auto-центровку */
+  padding: 0 !important;        /* без внутренних отступов */
+  display: flex;                /* надёжно прижимаем */
+  flex-direction: column;
+  align-items: flex-end;        /* ← прямо в край справа */
+  text-align: right !important; /* на всякий случай */
+}
+.services-section + .emerald-cta .emerald-cta-line{
+  margin: 0 !important;
+  text-align: right !important;
+  display: block;
+}
+
+/* чуть-чуть воздуха на очень узких экранах */
+@media (max-width: 640px){
+  .services-section + .emerald-cta .emerald-cta-inner{ padding-right: 12px !important; }
+}
+
+
+/* чуть-чуть воздуха справа у CTA */
+.services-section + .emerald-cta .emerald-cta-inner{
+  padding-right: 14px !important; /* ~чуть левее от края */
+}
+
+/* на мобилках можно ещё каплю меньше */
+@media (max-width: 640px){
+  .services-section + .emerald-cta .emerald-cta-inner{
+    padding-right: 12px !important;
+  }
+}
+
+/* О НАС — текст влево и ещё «чуть левее» сам столбец */
+.about .about-copy{
+  text-align: left;
+  justify-items: start;
+  align-items: start;
+  margin-left: -12px;            /* вот тот самый лёгкий сдвиг влево */
+}
+@media (max-width: 1024px){
+  .about .about-copy{ margin-left: -8px; } /* помягче на планшете/мобилке */
+}
+
+/* Линия над “200+ проектов” — на всю ширину текста и без отступов слева */
+.about .about-stat{
+  position: relative;
+  margin-top: clamp(22px, 4vw, 40px);
+  padding-top: 14px;
+}
+.about .about-stat::before{
+  content: "";
+  display: block;
+  width: 100%;                    /* чтобы начиналась прямо от левого края текста */
+  height: 2px;
+  background: #1f2937;
+  opacity: .9;
+  margin-bottom: 12px;
+}
+
+
+/* ABOUT — снять белую рамку у верхней фотки */
+.about .about-fore{
+  outline: none !important;  /* рубим рамку */
+  border: 0;                 /* на всякий случай */
+}
+
+/* можно чуть смягчить тень, чтобы без рамки выглядело аккуратно */
+.about .about-fore{
+  box-shadow: 0 18px 44px rgba(0,0,0,.28);
+  border-radius: 12px;       /* если хочешь оставляем скругление, не обязательно */
+}
+
+/* и в медиаправилах, где ранее задавался outline, тоже перебьём */
+@media (max-width: 1024px){
+  .about .about-fore{ outline: none !important; }
+}
+@media (max-width: 560px){
+  .about .about-fore{ outline: none !important; }
+}
+
+
+/* ABOUT — правый столбец тянем по высоте секции */
+.about .about-grid{
+  align-items: stretch;            /* вместо start — колонки одинаковой высоты */
+}
+
+/* сам визуальный столбец — по всей высоте своей grid-ячейки */
+.about .about-visual{
+  position: relative;
+  height: 100%;
+  min-height: 0;                   /* снимаем ограничитель, чтобы реально растягивалось */
+  overflow: hidden;                /* фон внутри без артефактов по краям */
+}
+
+/* фон — во всю площадь правого столбца */
+.about .about-bg{
+  position: absolute;
+  inset: 0;                        /* top/right/bottom/left: 0 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;               /* сохраняем кадрирование */
+}
+
+/* передняя картинка поверх как была */
+.about .about-fore{
+  position: absolute;
+  /* твои текущие размеры/позиции остаются; рамка уже снята ранее */
+}
+
+/* На узких экранах возвращаем прежнее поведение с минимальной высотой */
+@media (max-width: 1024px){
+  .about .about-grid{ align-items: start; }
+  .about .about-visual{ height: auto; min-height: clamp(520px, 60vw, 760px); }
+}
+@media (max-width: 560px){
+  .about .about-visual{ min-height: 440px; }
+}
+
+/* === HEADER LOGO: вылет текста дальше + полоска въезжает справа === */
+:root{
+  /* откуда выезжаем (правее = больше vw) */
+  --logoTextStart: 72vw;
+  --logoLineStart: 110vw;
+
+  /* задержки/длительности */
+  --logoTextDelay: .05s;
+  --logoTextDur:   .42s;
+  --logoLineDelay: .18s; /* добавляется к окончанию анимации текста */
+  --logoLineDur:   .38s;
+
+  /* геометрия */
+  --logoLineW: 220px;      /* длина полоски */
+  --logo-overlap: -110px;   /* насколько текст «наезжает» на кружок */
+}
+
+/* не обрезаем вылет за края */
+.header, .header-inner, .logo, .logo-link{ overflow: visible; }
+
+/* ТЕКСТ — стартуем ещё дальше справа и едем к overlap */
+.logo-text-img{
+  transform: translateX(var(--logoTextStart));
+  opacity: 0;
+}
+@keyframes logoTextFromRight{
+  from { transform: translateX(var(--logoTextStart)); opacity:0; filter: blur(1px); }
+  to   { transform: translateX(var(--logo-overlap));  opacity:1; filter: blur(0); }
+}
+/* перебиваем прежнюю анимацию текста */
+.logo.logo-anim .logo-text-img{
+  animation: logoTextFromRight var(--logoTextDur) cubic-bezier(.2,.8,.2,1) var(--logoTextDelay) both !important;
+}
+
+/* ПОЛОСКА — как отдельный элемент, выезжает справа ПОСЛЕ текста */
+.logo-line{
+  display: block;
+  width: var(--logoLineW);
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  margin-left: 8px;               /* зазор от текстового лого */
+  transform: translateX(var(--logoLineStart));
+  transform-origin: left center;
+  opacity: 0;
+}
+@keyframes logoLineFromRight{
+  from { transform: translateX(var(--logoLineStart)); opacity:0; }
+  to   { transform: translateX(0);                    opacity:1; }
+}
+/* запускаем полоску после текста */
+.logo.logo-anim .logo-line{
+  animation: logoLineFromRight var(--logoLineDur) cubic-bezier(.2,.8,.2,1)
+             calc(var(--logoTextDelay) + var(--logoTextDur) + var(--logoLineDelay)) both !important;
+}
+
+/* мобильная подстройка (короче линия, мягче вылет) */
+@media (max-width:640px){
+  :root{
+    --logoTextStart: 58vw;
+    --logoLineStart: 90vw;
+    --logoLineW: 160px;
+    --logo-overlap: -24px;
+  }
+}
+
+
+/* === ЛИНИЯ ПОД ТЕКСТОМ ЛОГО (позиционирование) === */
+:root{
+  /* ширина круглого знака слева */ 
+  --logoMarkW: 56px;
+  /* на сколько сдвинуть начало линии от первой буквы вправо (тонкая подстройка) */
+  --logoLineInset: 103px;
+  /* насколько опустить линию ниже середины текста */
+  --logoLineDown: 18px;
+}
+
+/* логотип — якорь для абсолютного позиционирования линии */
+.logo-link{ position: relative; }
+
+/* перебиваем стили линии: ставим ПОД текст, отталкиваясь от иконки + overlap */
+.logo-line{
+  position: absolute;
+  left: calc(var(--logoMarkW) + var(--logo-overlap) + var(--logoLineInset));
+  top:  calc(50% + var(--logoLineDown));
+  width: var(--logoLineW);
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+
+  /* вылет справа остаётся как у тебя */
+  transform: translateX(var(--logoLineStart));
+  transform-origin: left center;
+  opacity: 0;
+}
+
+/* мобильная подстройка размеров */
+@media (max-width:640px){
+  :root{
+    --logoMarkW: 44px;   /* если на мобиле иконка меньше */
+    --logoLineInset: 6px;
+    --logoLineDown: 16px;
+  }
 }

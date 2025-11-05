@@ -2,7 +2,7 @@ import useInViewLoop from "../hooks/useInViewLoop";
 
 const items = [
   { title: "Проектирование",   img: "wp-content/uploads/2023/12/Services1.png" },
-  { title: "Дизайн-интерьера", img: "wp-content/uploads/2023/12/Services5.png" },
+  { title: "Дизайн интерьера", img: "wp-content/uploads/2023/12/Services5.png" },
   { title: "Ремонт и отделка", img: "wp-content/uploads/2023/12/Services3.jpg" },
   { title: "Авторский надзор", img: "wp-content/uploads/2023/12/Services4.jpg" },
 ];
