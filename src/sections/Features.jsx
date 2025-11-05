@@ -31,14 +31,32 @@ const items = [
 
 export default function Features() {
   return (
-    <section id="features" className="features-circles" aria-label="Преимущества">
-      <div className="features-circles__grid">
+    <section id="features" className="features-circles" aria-label="Преимущества" data-anim="fade-scale" data-dur=".6" data-once="true">
+      <div
+        className="features-circles__grid"
+        data-anim="stagger-up"
+        data-stagger="90"
+        data-dur=".55"
+      >
         {items.map((it, i) => (
           <div className="features-circles__item" key={i}>
-            <span className="features-circles__ico" aria-hidden="true">
+            <span
+              className="features-circles__ico"
+              aria-hidden="true"
+              data-anim="soft-zoom"
+              data-dur=".55"
+              data-delay={i * 0.08}
+            >
               {it.icon}
             </span>
-            <div className="features-circles__label">{it.label}</div>
+            <div
+              className="features-circles__label"
+              data-anim="fade-up"
+              data-dur=".5"
+              data-delay={i * 0.08 + 0.08}
+            >
+              {it.label}
+            </div>
           </div>
         ))}
       </div>

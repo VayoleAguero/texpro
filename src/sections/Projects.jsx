@@ -171,6 +171,7 @@ const projects = [
 const STEP_MS = 4200; // период смены слайда
 const FADE_MS = 900;  // длительность кроссфейда/движения
 
+
 export default function Projects(){
   const [idx, setIdx] = useState(0);
   const [prev, setPrev] = useState(0);
@@ -182,7 +183,6 @@ export default function Projects(){
   const currSide = side(idx);
   const prevSide = side(prev);
 
-  // амплитуда "влёта" клина — как в Hero
   const fromX = useMemo(() => {
     if (prevSide === currSide) return currSide === "right" ? 5 : -5;
     return currSide === "right" ? 12 : -12;
@@ -210,6 +210,7 @@ export default function Projects(){
         className="proj-auto section"
         aria-label="Наши проекты"
         style={{ ["--fade"]: `${FADE_MS}ms` }}
+        data-anim="soft-up" data-dur=".65" data-once="true"
       >
         {projects.map((p, i) => {
           const isActive = i === idx;
@@ -231,24 +232,36 @@ export default function Projects(){
               onClick={() => open(p)}
               onKeyDown={(e)=> (e.key === "Enter" || e.key === " ") && open(p)}
             >
-              {/* фон фото */}
-              <img className="proj-bg smooth-zoom" src={bg} alt="" />
+              {/* фон фото — лёгкий клип по Y при первом появлении */}
+              <img
+                className="proj-bg smooth-zoom"
+                src={bg}
+                alt=""
+                data-anim="clip-y"
+                data-dur=".8"
+                data-once="true"
+              />
               {/* изумрудный клин слева/справа */}
               <div
                 className={`proj-overlay ${s === "right" ? "right" : "left"}`}
                 style={{ ["--fromX"]: `${fromX}%` }}
               />
-              {/* карточка описания на изумрудном фоне */}
-              <div className={`proj-card ${s === "right" ? "right" : "left"}`}>
-                <h2 className="proj-title">{p.title}</h2>
-                <span className="proj-underline" />
-                <p className="proj-summary">{p.summary}</p>
+              {/* карточка */}
+              <div
+                className={`proj-card ${s === "right" ? "right" : "left"}`}
+                data-anim={s === "right" ? "slide-left" : "fade-up"}
+                data-dur=".55"
+                data-delay=".05"
+              >
+                <h2 className="proj-title" data-anim="fade-in" data-dur=".45">{p.title}</h2>
+                <span className="proj-underline" data-anim="fade-in" data-delay=".06" data-dur=".45" />
+                <p className="proj-summary" data-anim="fade-up" data-delay=".1" data-dur=".5">{p.summary}</p>
                 {p.details?.length ? (
-                  <ul className="proj-list">
+                  <ul className="proj-list" data-anim="stagger-up" data-stagger="70" data-dur=".5" data-delay=".12">
                     {p.details.slice(0,3).map((d, k) => <li key={k}>{d}</li>)}
                   </ul>
                 ) : null}
-                <div className="proj-cta">Открыть проект ↗</div>
+                <div className="proj-cta" data-anim="fade-in" data-delay=".18" data-dur=".45">Открыть проект ↗</div>
               </div>
             </article>
           );

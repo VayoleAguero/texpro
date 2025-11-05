@@ -570,3 +570,472 @@ a { color: inherit; text-decoration: none; }
 @keyframes marqueeScroll{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 .white-screen{ position:absolute; inset:0; background:#fff; z-index: 0; opacity: 0; animation: whitePhase var(--heroDur) linear infinite; }
 @keyframes whitePhase{ 0%,61%{opacity:0} 62%{opacity:1} 75%{opacity:1} 76%,100%{opacity:0} }
+/* ============ ABOUT: фон всегда виден, без лишней высоты ============ */
+
+/* 1) Умеряем растяжку секции, убираем трюк с отриц. отступами */
+.about{
+  --aboutPadY: clamp(36px, 5vw, 72px) !important;
+  padding: var(--aboutPadY) 0 !important;
+}
+
+/* 2) Правая колонка — фикс высоты без «надувания» секции */
+.about .about-visual{
+  top: 0 !important;
+  margin-bottom: 0 !important;
+  height: auto !important;
+  min-height: clamp(420px, 50vw, 620px) !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+/* 3) Фон точно рисуется, даже если JS-ревил не сработал */
+.about .about-bg{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 60% 50% !important; /* можно сместить кадр тут */
+  clip-path: inset(0 0 0 0) !important; /* на случай clip-reveal */
+  opacity: 1 !important;
+  transform: none !important;
+  filter: saturate(.98) contrast(1.02) !important;
+}
+
+/* 4) Передняя картинка — «чуть выше и чуть меньше» */
+.about .about-fore{
+  width: min(50%, 520px) !important;
+  left: -6% !important;
+  top: 18% !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.28) !important;
+  z-index: 2 !important;
+}
+
+/* ============ Плотность секций: убираем лишнюю «яму» ============ */
+/* Если просвет всё ещё велик — мягко ужмём вертикальные паддинги */
+.section{
+  padding: clamp(60px, 9vw, 120px) 0 !important; /* было 80/120/160 */
+}
+.features-circles{
+  padding: clamp(28px, 5vw, 60px) 0 !important;
+}
+
+/* ============ Перестраховка для clip-reveal (фон не исчезает) ============ */
+/* Если где-то стоит data-anim="clip-reveal", а JS не инициализировался —
+   не скрываем элемент базово. Ревил поверх этого всё равно сработает. */
+[data-anim="clip-reveal"]{
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+}
+
+
+/* ===== ABOUT: передняя меньше и выше, задняя крупнее без зума ===== */
+
+/* делаем сам контейнер повыше, чтобы фон уверенно заполнял колонку */
+.about .about-visual{
+  min-height: clamp(560px, 62vw, 820px);
+}
+
+/* ЗАДНИЙ ФОН: делаем «крупнее кадр» за счёт реального размера,
+   без transform: scale() → никаких зум-анимаций.
+   Немного вылезаем за края, чтобы не было «волосков» */
+.about .about-bg{
+  position: absolute;
+  top: -6%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+  object-position: center;
+  transform: none !important;   /* на случай, если где-то прилетал scale */
+  filter: none;                  /* убираем любые лишние фильтры */
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ПЕРЕДНИЙ КВАДРАТ: делаем компактнее и чуть выше */
+.about .about-fore{
+  width: min(46%, 520px);        /* было ~58% — уменьшаем */
+  top: 18%;                      /* было 22% — поднимаем */
+  left: -6%;                     /* чуть меньше «наезда» слева */
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.28);
+}
+
+/* Адаптив — чтоб на планшете/мобиле всё осталось аккуратным */
+@media (max-width: 1024px){
+  .about .about-visual{ min-height: clamp(520px, 60vw, 720px); }
+  .about .about-fore{ width: 54%; left: 4%; top: 50%; transform: translateY(-50%); }
+}
+@media (max-width: 560px){
+  .about .about-visual{ min-height: 440px; }
+  .about .about-fore{ width: 62%; left: 3%; top: 56%; }
+}
+
+
+/* ABOUT: фон больше, передний квадрат меньше и выше */
+.about .about-visual > img.about-bg{
+  /* ещё шире и сдвиг вправо как был */
+  width: 145% !important;     /* было 130% */
+  left: -27% !important;      /* якорим левее */
+  transform: translateX(30%) !important; /* уезжаем вправо сильнее */
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
+  filter: none !important;
+}
+
+/* передний квадрат: компактнее и выше */
+.about .about-visual > img.about-fore{
+  width: min(48%, 520px) !important;  /* было ~52% */
+  top: 16% !important;                /* было 22% — слегка поднял */
+  left: -14% !important;              /* оставляем левее как просили ранее */
+  z-index: 2 !important;
+}
+
+/* Адаптивные подправки, чтобы не уезжало на узких */
+@media (max-width: 1280px){
+  .about .about-visual > img.about-bg{
+    width: 135% !important;
+    left: -16% !important;
+    transform: translateX(24%) !important;
+  }
+}
+@media (max-width: 1024px){
+  .about .about-visual > img.about-bg{
+    width: 122% !important;
+    left: -8% !important;
+    transform: translateX(14%) !important;
+  }
+  .about .about-visual > img.about-fore{
+    width: 54% !important;   /* чуть больше на планшете, чтобы не терялся */
+    top: 22% !important;     /* возвращаем ближе к центру */
+    left: 4% !important;
+  }
+}
+@media (max-width: 560px){
+  .about .about-visual > img.about-bg{
+    width: 114% !important;
+    left: -5% !important;
+    transform: translateX(8%) !important;
+  }
+  .about .about-visual > img.about-fore{
+    width: 62% !important;
+    top: 26% !important;
+    left: 3% !important;
+  }
+}
+
+
+/* === STANDARDS: пункты-списки — вместо тире делаем кружки */
+.standards-list li{
+  padding-left: 28px;            /* чуть больше под кружок */
+}
+.standards-list li::before{
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;            /* круг */
+  top: .62em;                    /* выравниваем по центру строки */
+  background: #fff;              /* белый маркер */
+  opacity: .95;
+}
+
+/* === STANDARDS: верхнюю «карточку» поднять и сдвинуть вправо, убрать рамку */
+.standards-band .std-front{
+  border: 0 !important;                          /* убрали белую рамку */
+  left: clamp(40px, 9vw, 88px) !important;       /* правее */
+  top: 40% !important;                            /* выше (было 50%) */
+  transform: translateY(-50%) !important;        /* центр относительно новой точки */
+  box-shadow: 0 18px 44px rgba(0,0,0,.30);       /* оставляем тень как была */
+}
+
+/* Мобилка/планшет: оставляем без рамки; позиционирование — как в твоём адаптиве */
+@media (max-width: 980px){
+  .standards-band .std-front{
+    border: 0 !important;
+  }
+}
+
+/* ===== STD: нижний фон (std-bg) — сильно левее без зума */
+.standards-band .std-bg{
+  transform: translateX(-10%) !important; /* гоняем полотно левее */
+  /* без scale — никакого «зума» */
+}
+
+/* если где-то уже стоит transform, объединяем: */
+.standards-band .std-bg{
+  will-change: transform;
+}
+
+/* ===== STD: верхняя карточка (std-front) — правее и прямоугольная */
+.standards-band .std-front{
+  left: clamp(140px, 14vw, 220px) !important; /* ещё правее */
+  top: 40% !important;
+  transform: translateY(-50%) !important;
+
+  /* была 4/3 — делаем прямоугольник */
+  aspect-ratio: 16 / 10 !important;
+  width: min(56%, 560px) !important;          /* чутка шире */
+  border: 0 !important;                       /* рамку не возвращаем */
+  border-radius: 12px;                        /* округление как было */
+}
+
+/* адаптив — чтобы не ломать мобилку */
+@media (max-width: 980px){
+  .standards-band .std-bg{
+    transform: translateX(-6%) !important;    /* помягче на планшете */
+  }
+  .standards-band .std-front{
+    left: clamp(24px, 8vw, 40px) !important;  /* правее, но без перегиба */
+    aspect-ratio: 16 / 11 !important;         /* немного выше для узких экранов */
+    width: clamp(220px, 58%, 360px) !important;
+  }
+}
+
+/* ===== STANDARDS: фон заметно больше и левее, без искажений */
+.standards-band .std-bg{
+  /* растянем полотно шире контейнера и сдвинем влево */
+  left: -18% !important;
+  width: 136% !important;      /* существенно больше */
+  height: 100% !important;
+  object-fit: cover !important; /* без искажений */
+  border-radius: 12px;          /* как было */
+  box-shadow: 0 18px 44px rgba(0,0,0,.25);
+}
+
+/* ===== STANDARDS: верхняя картинка — узкий высокий прямоугольник, правее и выше, без рамки */
+.standards-band .std-front{
+  aspect-ratio: 5 / 7 !important;      /* высокий, не широкий */
+  width: min(34%, 380px) !important;   /* уже и выше визуально */
+  left: clamp(180px, 18vw, 260px) !important; /* правее */
+  top: 46% !important;                 /* чуть выше центра */
+  transform: translateY(-50%) !important;
+
+  border: 0 !important;                /* без рамки */
+  border-radius: 12px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.30) !important;
+}
+
+/* Адаптив — немного мягче сдвиги на узких экранах */
+@media (max-width: 980px){
+  .standards-band .std-bg{
+    left: -10% !important;
+    width: 120% !important;
+  }
+  .standards-band .std-front{
+    aspect-ratio: 4 / 6 !important;
+    width: clamp(220px, 52%, 320px) !important;
+    left: clamp(28px, 8vw, 48px) !important;
+    top: 50% !important;
+  }
+}
+
+/* Фон: гораздо левее и шире, без зума/искажений */
+.standards-band .std-bg{
+  left: -28% !important;      /* было ~-18% */
+  width: 160% !important;     /* было ~136% */
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important; /* можно 'left center', если нужно ещё «левее» чувствовать кадр */
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.25);
+}
+
+/* Верхняя (передняя) картинка: чуть правее, чтобы визуально «дальше» фона */
+.standards-band .std-front{
+  left: clamp(200px, 20vw, 300px) !important; /* было ~18vw */
+  aspect-ratio: 5 / 7 !important;
+  width: min(34%, 380px) !important;
+  top: 46% !important;
+  transform: translateY(-50%) !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.30) !important;
+}
+
+/* Адаптивная подстройка, чтобы не съехать на узких */
+@media (max-width: 980px){
+  .standards-band .std-bg{
+    left: -20% !important;
+    width: 140% !important;
+  }
+  .standards-band .std-front{
+    left: clamp(36px, 9vw, 56px) !important;
+    width: clamp(220px, 52%, 320px) !important;
+    aspect-ratio: 4 / 6 !important;
+  }
+}
+
+/* === STD fine-tune: front a bit right, background max left === */
+.standards-band .std-bg{
+  left: -40% !important;    /* максимально влево */
+  width: 180% !important;   /* расширяем полотно, чтобы не было краёв */
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.standards-band .std-front{
+  left: clamp(240px, 24vw, 340px) !important; /* чуть правее */
+  transform: translateY(-50%) !important;
+}
+
+/* мягче на планшете/мобиле */
+@media (max-width: 980px){
+  .standards-band .std-bg{
+    left: -22% !important;
+    width: 140% !important;
+  }
+  .standards-band .std-front{
+    left: clamp(32px, 10vw, 64px) !important;
+  }
+}
+
+/* === STD: фон максимально влево и «центр по левому краю» === */
+.standards-band .std-bg{
+  left: -60% !important;         /* сильный вынос за левый край */
+  width: 220% !important;        /* расширяем, чтобы не оголялись края */
+  height: 100% !important;
+  transform: none !important;    /* на всякий пожарный */
+  object-fit: cover !important;
+  object-position: left center !important; /* «центруем» кадр от левого края */
+}
+
+/* помягче на более узких */
+@media (max-width: 1280px){
+  .standards-band .std-bg{
+    left: -48% !important;
+    width: 200% !important;
+  }
+}
+@media (max-width: 980px){
+  .standards-band .std-bg{
+    left: -30% !important;
+    width: 160% !important;
+  }
+}
+
+.contact-quick { gap: 12px; }
+.contact-phone { color:#0a0e0e; }
+.contact-phone:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* --- Contact layout (визитка справа, ближе к форме) --- */
+.contact-h2{
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+
+.contact-grid{
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 360px);
+  gap: clamp(14px, 2.2vw, 20px); /* ближе к форме */
+  align-items: start;
+}
+
+/* карточка-визитка */
+.contact-card{
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+}
+
+.cc-title{
+  font-weight: 800;
+  letter-spacing: .2px;
+  margin-bottom: 8px;
+}
+
+.cc-row{ display: block; text-decoration: none; color: inherit; margin: 6px 0 10px; }
+.cc-phone{ font-weight: 800; font-size: clamp(18px, 2.2vw, 22px); }
+
+.cc-actions{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.cc-btn{
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px; border: 1px solid #e5e7eb;
+  font-weight: 700; text-decoration: none; color: #0a0e0e; background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+.cc-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.08); border-color:#d1d5db; background:#fafafa; }
+.cc-btn .cc-ico{ width: 22px; height: 22px; display: block; }
+
+.cc-btn.tg{ color: #229ED9; }  /* Telegram фирменный */
+.cc-btn.wa{ color: #25D366; }  /* WhatsApp фирменный */
+
+.cc-note{ margin-top: 8px; color: #374151; font-size: 14px; }
+
+/* узкие экраны — кладём визитку под форму */
+@media (max-width: 720px){
+  .contact-grid{ grid-template-columns: 1fr; }
+}
+
+/* лёгкий отклик на клик-заглушку */
+.cc-btn.clicked{
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  filter: saturate(1.05) contrast(1.03);
+}
+
+/* УБИРАЕМ центрирование и фикс-ширину у контейнера контактов */
+.contact-wrap .container{
+  max-width: none !important;
+  margin: 0 !important;            /* никакого auto */
+  padding-left: 16px !important;   /* мягкий левый отступ секции */
+  padding-right: 16px !important;
+}
+
+/* Сетка: две колонки, прижаты слева, маленький зазор между ними */
+.contact-grid{
+  display: grid !important;
+  grid-template-columns: minmax(320px, 560px) minmax(260px, 360px) !important;
+  justify-content: start !important;   /* ключ: прижим к левому краю */
+  justify-items: start !important;
+  align-items: start !important;
+  gap: 12px 16px !important;           /* плотный зазор форма ↔ визитка */
+}
+
+/* Форма — никаких внешних отступов */
+.contact-form{
+  margin: 0 !important;
+  justify-self: start !important;
+}
+
+/* Визитка — рядом с формой, без «прилипания» вправо */
+.contact-card{
+  justify-self: start !important;
+  margin: 0 !important;
+}
+
+/* Мобильная укладка — всё равно прижато к левому краю */
+@media (max-width: 720px){
+  .contact-grid{
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .contact-card{
+    width: auto !important;
+  }
+}
+/* CONTACT: вернуть ширину полей как была — на всю колонку */
+.contact-form{
+  width: 100% !important;          /* тянем форму на ширину 1-й колонки */
+  max-width: none !important;
+  justify-self: start !important;
+}
+
+.contact-form .form{
+  width: 100% !important;          /* сама grid-форма тоже на всю ширину */
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.contact-form .input{
+  width: 100% !important;          /* инпуты занимают всю строку */
+}
+
+.contact-form .button{
+  width: auto;                      /* кнопку оставим компактной */
+}
+
