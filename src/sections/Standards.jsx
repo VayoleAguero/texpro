@@ -10,42 +10,65 @@ export default function Standards() {
       data-ease="expo"
     >
       <div className="standards-grid">
-        {/* ЛЕВЫЙ МЕДИА-БЛОК */}
-        <div className="standards-media" data-anim="fade-in" data-dur=".5" data-once="true">
-          {/* Фоновая «плёнка» — отдельный контейнер с ручками */}
+        <div
+          className="standards-media"
+          data-anim="fade-in"
+          data-dur=".5"
+          data-once="true"
+          style={{ minHeight: 'clamp(640px, 60vw, 900px)', position: 'relative' }}
+        >
+          {/* фон — отдельный слой без скруглений */}
           <div
-            className="std-bg-wrap"
-            /* можно править прямо здесь под нужный кадр */
-            style={{
-              '--std-bg-w': '180%',          // ширина полотна
-              '--std-bg-h': '120%',          // высота относительно колонки
-              '--std-bg-left': '-40%',       // сдвиг фона влево (отриц. = за край)
-              '--std-bg-top': '-10%',        // выход вверх
-              '--std-bg-bottom': '-10%',     // выход вниз
-              '--std-bg-pos': 'left center', // object-position
-            }}
+            className="std-bg-bleed"
+            aria-hidden="true"
+            style={{ position: 'absolute', inset: 0, overflow: 'visible', zIndex: 0 }}
           >
             <img
-              className="std-bg"
+              className="std-bg-fit"
               src="wp-content/uploads/2023/12/Standards_bg.jpg"
               alt=""
               loading="lazy"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: '-40%',
+                height: '100%',
+                width: 'auto',
+                maxWidth: 'none',
+                objectFit: 'contain',
+                transform: 'none',
+                border: '0',
+                borderRadius: 0,
+                boxShadow: 'none'
+              }}
             />
           </div>
 
-          {/* Верхняя карточка — с мягким ревилом */}
+          {/* верхняя картинка — строгий прямоугольник */}
           <img
-            className="std-front"
+            className="std-front-plain"
             src="wp-content/uploads/2023/12/Standards_up.jpg"
             alt=""
             loading="lazy"
             data-anim="soft-up"
             data-delay=".12"
             data-dur=".6"
+            style={{
+              position: 'absolute',
+              left: 'calc(18vw + 10px)',
+              top: '20%',                  // было 46% — приподняли
+              transform: 'translateY(-50%)',
+              aspectRatio: '5 / 7',
+              width: 'min(34%, 380px)',
+              border: '0',
+              borderRadius: 0,
+              outline: 'none',
+              boxShadow: 'none',
+              zIndex: 2
+            }}
           />
         </div>
 
-        {/* ПРАВЫЙ ТЕКСТ */}
         <div
           className="standards-card standards-card--ghost"
           data-anim="slide-left"
@@ -54,13 +77,14 @@ export default function Standards() {
           <h2 className="standards-title" data-anim="fade-in" data-delay=".06" data-dur=".5">
             Система стандартов
           </h2>
-          <span className="st-title-underline" aria-hidden="true" data-anim="fade-in" data-delay=".12" data-dur=".5" />
-          <ul
-            className="standards-list"
-            data-anim="stagger-up"
-            data-stagger="80"
-            data-dur=".55"
-          >
+          <span
+            className="st-title-underline"
+            aria-hidden="true"
+            data-anim="fade-in"
+            data-delay=".12"
+            data-dur=".5"
+          />
+          <ul className="standards-list" data-anim="stagger-up" data-stagger="80" data-dur=".55">
             <li>Соблюдение строительных норм и правил (СНиП)</li>
             <li>Многоступенчатый контроль — Директор-Инженер-Прораб-Бригадир</li>
             <li>Страхование объектов</li>

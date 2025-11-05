@@ -1202,3 +1202,557 @@ a { color: inherit; text-decoration: none; }
   }
 }
 
+/* ===== ABOUT: убираем внешние отступы секции целиком ===== */
+#about.about {
+  padding-block: 0 !important; /* гасим те самые 72px сверху/снизу */
+  margin-block: 0 !important;  /* на всякий, если где-то стоял global margin */
+}
+
+/* Если у тебя есть правило вида section + section { margin-top: ... } — гасим рядом с about */
+section + #about,
+#about + section {
+  margin-top: 0 !important;
+}
+
+/* Внутренние отступы держим на гриде, чтобы контент не прилипал */
+.about-grid.full-bleed-padding {
+  padding-block: var(--pad-section-desktop);
+}
+@media (max-width: 1024px) {
+  .about-grid.full-bleed-padding { padding-block: var(--pad-section-tablet); }
+}
+@media (max-width: 640px) {
+  .about-grid.full-bleed-padding { padding-block: var(--pad-section-mobile); }
+}
+
+.about {
+  position: relative;
+  overflow: hidden;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 30%) 1fr;
+  position: relative;
+  z-index: 2; /* текст и левая колонка поверх */
+}
+
+.about-visual {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 50%;   /* начинаем с середины */
+  width: 50vw; /* правая половина экрана */
+  height: 100%;
+  z-index: 1;
+}
+
+.about-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* === ABOUT: тонкая подстройка позиций и высоты === */
+:root{
+  /* сдвиги (отрицательные — влево) */
+  --aboutForeDx: -100px;  /* верхняя (маленькая) картинка */
+  --aboutBgDx:   -150px;  /* нижний фон */
+
+  /* секцию делаем ещё выше */
+  --aboutH: clamp(720px, 74vw, 1100px);
+}
+
+/* тянем саму секцию/грид до новой высоты */
+#about.about{ min-height: var(--aboutH) !important; }
+#about .about-grid{ min-height: var(--aboutH) !important; }
+
+/* верхняя картинка: на 100px левее */
+@supports (translate: 1px){
+  #about .about-fore{ translate: var(--aboutForeDx) 0 !important; }
+}
+@supports not (translate: 1px){
+  #about .about-fore{ margin-left: var(--aboutForeDx) !important; }
+}
+
+/* нижняя (фоновая) картинка: на 150px левее */
+@supports (translate: 1px){
+  #about .about-bg{ translate: var(--aboutBgDx) 0 !important; }
+}
+@supports not (translate: 1px){
+  #about .about-bg{ left: calc(0px + var(--aboutBgDx)) !important; }
+}
+
+/* перестраховка на планшет и ниже — возвращаем штатные позиции */
+@media (max-width: 1024px){
+  :root{ --aboutH: auto; }
+  #about.about, #about .about-grid{ min-height: 0 !important; }
+
+  #about .about-fore,
+  #about .about-bg{
+    translate: 0 0 !important;
+    margin-left: 0 !important;
+    left: 0 !important;
+  }
+}
+
+/* === ABOUT: сдвиг левой колонки по оси X === */
+:root{
+  /* положительное значение — вправо, отрицательное — влево */
+  --aboutTextNudgeX: 70px; /* например: 60px чтобы сдвинуть вправо на 60 */
+}
+
+@media (min-width: 1025px){
+  /* современные браузеры */
+  @supports (translate: 1px){
+    #about .about-copy{
+      translate: var(--aboutTextNudgeX) 0 !important;
+    }
+  }
+  /* фолбэк, если translate не поддерживается */
+  @supports not (translate: 1px){
+    #about .about-copy{
+      margin-left: var(--aboutTextNudgeX) !important;
+    }
+  }
+}
+
+/* на планшете и ниже — не двигаем, оставляем потоковую раскладку */
+@media (max-width: 1024px){
+  #about .about-copy{
+    translate: 0 0 !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* ABOUT: передняя картинка всегда поверх */
+#about { position: relative; z-index: 5; isolation: isolate; } /* свой слой секции */
+
+#about .about-visual{
+  position: absolute;
+  inset: 0 0 0 50%;
+  width: 50vw;
+  overflow: visible !important;    /* чтобы края не резались родителем */
+  z-index: 1;
+}
+
+#about .about-bg{ z-index: 1; }
+
+#about .about-fore{
+  position: relative;
+  z-index: 10 !important;          /* поднять над фоном и соседями */
+  pointer-events: auto;
+  /* если нужно ещё «выше» соседних секций — можно поднять секцию: */
+  /* top/left как были, не меняем позиционирование */
+}
+
+/* на всякий случай — если соседняя секция имеет высокий z-index */
+.standards-band{ z-index: 0; position: relative; }
+
+
+/* === ABOUT fore: опустить вниз на 20px везде аккуратно === */
+:root{ --aboutForeShiftY: 25px; }
+
+/* десктоп — просто смещаем на 20px */
+#about .about-fore{
+  translate: 0 var(--aboutForeShiftY) !important; /* не конфликтует с другими transform */
+}
+
+/* планшеты: у тебя там есть центрирование translateY(-50%) — добавим +20px */
+
+/* фоллбек, если translate не поддерживается */
+@supports not (translate: 1px){
+  /* десктоп */
+  #about .about-fore{ transform: translateY(var(--aboutForeShiftY)) !important; }
+  /* планшеты с -50% */
+  @media (max-width: 1024px){
+    #about .about-fore{ transform: translateY(calc(-50% + var(--aboutForeShiftY))) !important; }
+  }
+}
+
+/* === ABOUT fore: немного левее + уже опущена на 20px === */
+:root{
+  --aboutForeShiftX: -40px;   /* ← сколько влево (отрицательное значение) */
+  --aboutForeShiftY:  20px;   /* уже было: вниз на 20px */
+}
+
+/* десктоп: сдвиг по X и Y одной строкой */
+#about .about-fore{
+  translate: var(--aboutForeShiftX) var(--aboutForeShiftY) !important;
+}
+
+/* планшеты: сохраняем -50% по Y и добавляем наш X-сдвиг */
+@media (max-width: 1024px){
+  #about .about-fore{
+    translate: var(--aboutForeShiftX) calc(-50% + var(--aboutForeShiftY)) !important;
+  }
+}
+
+/* фоллбек, если отдельный translate не поддерживается */
+@supports not (translate: 1px){
+  #about .about-fore{
+    transform: translate(var(--aboutForeShiftX), var(--aboutForeShiftY)) !important;
+  }
+  @media (max-width: 1024px){
+    #about .about-fore{
+      transform: translate(var(--aboutForeShiftX), calc(-50% + var(--aboutForeShiftY))) !important;
+    }
+  }
+}
+/* ABOUT — левая колонка */
+.about-copy p,
+.about-lead{
+  font-size: clamp(18px, 2.1vw, 24px) !important; /* +~2px на всех брейкпоинтах */
+  line-height: 1.5 !important;
+  letter-spacing: .2px;
+}
+
+/* заголовок ABOUT покрупнее */
+.about-h{
+  font-size: clamp(24px, 2.6vw, 36px) !important; /* было max 32 → 36 */
+  letter-spacing: .35px;
+}
+
+/* подпоясывающая линия — оставим, но текст крупнее не «давим» */
+.about-stat-n{
+  font-size: clamp(36px, 4.8vw, 52px) !important;
+}
+.about-stat-t{
+  font-size: clamp(16px, 1.8vw, 22px) !important;
+}
+
+/* STANDARDS — пункты и описания */
+.standards-list{
+  font-size: clamp(17px, 1.9vw, 22px) !important;
+  line-height: 1.5 !important;
+}
+.standards-title{
+  font-size: clamp(24px, 3.4vw, 40px) !important;
+}
+
+/* PORTFOLIO INTRO — лид-текст */
+.pi-lead{
+  font-size: clamp(20px, 2.8vw, 30px) !important;
+  line-height: 1.4 !important;
+}
+
+/* PROJECTS HERO — краткие описания */
+.proj-summary, .proj-list{
+  font-size: clamp(17px, 1.9vw, 22px) !important;
+  line-height: 1.45 !important;
+}
+
+/* CONTACT — поля остаются прежними, но текст формы чуть крупнее */
+.contact-section .input{
+  font-size: 16.5px !important;
+}
+
+/* ========= ABOUT: шире колонка текста, нормальная длина строки ========= */
+
+/* задаём желаемую ширину строки (measure) */
+:root{
+  --about-measure: clamp(540px, 44vw, 720px); /* было ~520 → стало до 720 */
+}
+
+/* делаем левую колонку шире */
+.about-grid{
+  grid-template-columns: minmax(380px, 38%) 1fr !important; /* было 30% */
+}
+
+/* текстовая колонка — читаемая ширина и выравнивание */
+.about-copy{
+  align-content: start !important;
+  justify-items: start !important;
+  text-align: left !important;                 /* вместо right */
+  gap: clamp(6px, 1.4vw, 12px);
+}
+
+/* основной абзац: убираем старый max-width и задаём новый measure */
+.about-lead{
+  max-width: var(--about-measure) !important;  /* шире строка */
+  text-wrap: pretty;
+  line-height: 1.5;
+}
+
+/* если есть другие <p> внутри about-copy — пусть тоже шире */
+.about-copy p{
+  max-width: var(--about-measure) !important;
+}
+
+/* тонкая настройка заголовка и линии под ним, чтобы не «висели» слева */
+.about-h{ margin-left: 0 !important; }
+.about-rule{
+  margin-left: 0 !important;
+  width: clamp(200px, 28%, 320px);
+}
+
+/* на планшете можно чуть сузить, чтобы не давило */
+@media (max-width: 1024px){
+  :root{ --about-measure: clamp(480px, 64vw, 660px); }
+  .about-grid{ grid-template-columns: 1fr !important; }
+  .about-copy{ justify-items: center !important; text-align: center !important; }
+  .about-rule{ margin-left: auto !important; margin-right: auto !important; }
+}
+
+/* ABOUT: выравнивание по правому краю */
+.about-copy{
+  text-align: right !important;
+  justify-items: end !important;
+  align-content: start !important;
+}
+
+/* абзацы держим нужной ширины, но прижимаем вправо */
+.about-lead,
+.about-copy p{
+  max-width: var(--about-measure) !important;
+  margin-left: auto !important;  /* толкаем блоки вправо */
+  margin-right: 0 !important;
+  line-height: 1.5;
+}
+
+/* заголовок и линия тоже вправо */
+.about-h{ text-align: right !important; }
+.about-rule{
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  width: clamp(200px, 28%, 320px);
+}
+
+/* статистика снизу — к правому краю */
+.about-stat{ justify-self: end !important; text-align: right !important; }
+
+@media (max-width: 1024px){
+  /* на узких — снова по центру, как раньше */
+  .about-copy{ text-align: center !important; justify-items: center !important; }
+  .about-rule{ margin-left: auto !important; margin-right: auto !important; }
+}
+
+/* ===== STANDARDS: выше секция */
+#standards.standards-band,
+.standards-band{
+  padding: clamp(80px, 10vw, 140px) 0 !important;  /* больше воздуха сверху/снизу */
+}
+.standards-band .standards-media{
+  min-height: clamp(620px, 58vw, 860px) !important; /* сама медиаколонка выше */
+}
+
+/* ===== STANDARDS: фон далеко влево, без зума/искажений */
+.standards-band .std-bg{
+  position: absolute !important;
+  top: 0; bottom: 0;
+  left: -60% !important;          /* СИЛЬНЫЙ сдвиг влево */
+  width: 220% !important;         /* полотно шире, чтобы края не оголялись */
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: left center !important;
+  transform: none !important;     /* никаких scale/translate */
+}
+
+/* ===== STANDARDS: верхнюю картинку оставляем как есть (фиксируем) */
+.standards-band .std-front{
+  /* значения из твоей текущей раскладки — не двигаем */
+  left: clamp(180px, 18vw, 260px) !important;
+  top: 46% !important;
+  transform: translateY(-50%) !important;
+  aspect-ratio: 5 / 7 !important;
+  width: min(34%, 380px) !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.30) !important;
+}
+
+/* планшет и ниже — мягче, чтобы не вываливалось */
+@media (max-width: 980px){
+  .standards-band .standards-media{ min-height: clamp(520px, 66vw, 720px) !important; }
+  .standards-band .std-bg{ left: -30% !important; width: 160% !important; }
+  .standards-band .std-front{
+    left: clamp(28px, 8vw, 48px) !important;
+    aspect-ratio: 4 / 6 !important;
+    width: clamp(220px, 52%, 320px) !important;
+    top: 50% !important;
+  }
+}
+
+/* === STANDARDS: как в ABOUT, но тянем фон влево без зума === */
+:root{
+  /* Насколько уводим фон влево и насколько расширяем полотно */
+  --std-shift: 42vw;                 /* сдвиг влево (крути 30–70vw) */
+  --std-min-h: clamp(620px, 58vw, 860px);  /* высота медиаблока секции */
+}
+
+#standards.standards-band .standards-media{
+  min-height: var(--std-min-h) !important;  /* секция повыше, как просил */
+  overflow: visible !important;              /* даём фону «вылезти» влево */
+}
+
+/* Фон: увеличиваем полотно и уводим ЛЕВО, без transform:scale */
+#standards.standards-band .std-bg{
+  position: absolute !important;
+  top: 0; bottom: 0;
+  left: calc(-1 * var(--std-shift)) !important;     /* ключ: уход влево */
+  width: calc(100% + var(--std-shift)) !important;  /* расширяем полотно */
+  height: 100% !important;
+
+  object-fit: cover !important;
+  object-position: left center !important;          /* фокус от левого края */
+  transform: none !important;                       /* прибили любой зум */
+  /* эстетика как была: */
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.25);
+}
+
+/* Верхнюю (переднюю) картинку НЕ трогаем — фикс твоих текущих значений */
+#standards.standards-band .std-front{
+  left: clamp(180px, 18vw, 260px) !important;
+  top: 46% !important;
+  transform: translateY(-50%) !important;
+  aspect-ratio: 5 / 7 !important;
+  width: min(34%, 380px) !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.30) !important;
+  z-index: 1;
+}
+
+/* Чуть мягче на узких */
+@media (max-width: 1280px){
+  :root{ --std-shift: 34vw; }
+}
+@media (max-width: 980px){
+  :root{ --std-shift: 22vw; }
+  #standards.standards-band .standards-media{
+    min-height: clamp(520px, 66vw, 720px) !important;
+  }
+}
+
+/* === STD: разрешаем рисовать за пределами секции */
+.standards-band{ overflow: visible !important; }
+.standards-band .standards-grid{ overflow: visible !important; }
+
+/* ключевой фикс: убираем paint containment и включаем overflow */
+.standards-media{
+  overflow: visible !important;
+  contain: none !important;      /* было contain: layout paint → резало фон */
+  position: relative !important;
+  min-height: clamp(620px, 58vw, 860px) !important;
+}
+
+/* контейнер для «выползающего» фона */
+.std-bg-bleed{
+  position: absolute;
+  inset: 0;
+  overflow: visible;             /* даём выйти за левый край */
+  z-index: 0;
+}
+
+/* параметры выноса — регулируй только это */
+:root{
+  --std-shift: 46vw;             /* на сколько увести ЛЕВО (крути 30–70vw) */
+}
+
+/* сам фон: шире и левее, без зума */
+.std-bg{
+  position: absolute !important;
+  top: 0; bottom: 0;
+  left: calc(-1 * var(--std-shift)) !important;      /* вынос влево */
+  width: calc(100% + var(--std-shift)) !important;   /* расширяем полотно */
+  height: 100% !important;
+
+  object-fit: cover !important;
+  object-position: left center !important;
+  transform: none !important;     /* прибиваем любой scale */
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.25);
+  z-index: 0;
+}
+
+/* верхнюю карточку НЕ трогаем — оставляем как есть у тебя */
+.standards-band .std-front{
+  position: absolute;
+  z-index: 1;
+  /* твои текущие значения */
+  left: clamp(180px, 18vw, 260px) !important;
+  top: 46% !important;
+  transform: translateY(-50%) !important;
+  aspect-ratio: 5 / 7 !important;
+  width: min(34%, 380px) !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.30) !important;
+}
+
+/* адаптив — мягче на узких */
+@media (max-width: 1280px){
+  :root{ --std-shift: 36vw; }
+}
+@media (max-width: 980px){
+  :root{ --std-shift: 22vw; }
+  .standards-media{ min-height: clamp(520px, 66vw, 720px) !important; }
+}
+
+/* ABOUT — ещё меньше + сдвиг влево на 120px (только десктоп) */
+@media (min-width: 1025px){
+  #about .about-fore{
+    width: min(40%, 360px) !important;      /* было 36% → стало компактнее */
+    left: calc(-4% - 120px) !important;     /* сдвиг влево на 120px от текущей позиции */
+    top: 20% !important;                     /* как раньше (чуть выше центра) */
+    border-radius: 12px;                     /* твои текущие углы, если нужно — можно убрать */
+    box-shadow: 0 14px 36px rgba(0,0,0,.24) !important;
+  }
+}
+
+/* планшет/мобила — без изменений твоего адаптива */
+@media (max-width: 1024px){
+  #about .about-fore{
+    width: 50% !important;
+    left: 4% !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    box-shadow: 0 18px 44px rgba(0,0,0,.28) !important;
+  }
+}
+
+/* ====== REVEAL BASE ====== */
+[data-reveal] { opacity: 0; transform: translateY(18px) scale(.98); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .65s; will-change: transform, opacity; }
+.in-view[data-reveal] { opacity: 1; transform: translateY(0) scale(1); }
+[data-reveal="fade"]   { transform: none; }
+[data-reveal="up"]     { transform: translateY(18px); }
+[data-reveal="scale"]  { transform: scale(.96); }
+.in-view[data-reveal="scale"] { transform: scale(1); }
+
+/* ====== HOVER LIFT / GLOW ====== */
+.hover-lift{ transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s, filter .28s; will-change: transform; }
+.hover-lift:hover{ transform: translateY(-8px); box-shadow: 0 22px 44px rgba(0,0,0,.22); filter: saturate(1.05) contrast(1.03); }
+
+.hover-glow{ position: relative; }
+.hover-glow::after{
+  content:""; position:absolute; inset:-2px; border-radius:12px; box-shadow:0 0 0 0 rgba(42,163,107,.0);
+  transition: box-shadow .28s ease; pointer-events:none;
+}
+.hover-glow:hover::after{ box-shadow:0 0 0 6px rgba(42,163,107,.18); }
+
+/* ====== PARALLAX SAFE ====== */
+[data-parallax-y], [data-parallax-x], [data-mouse-parallax]{
+  will-change: transform;
+}
+
+/* ====== TILT BASE ====== */
+[data-tilt]{ transform-style: preserve-3d; transition: transform .18s ease; }
+
+/* ===== underline sweep (для h2/h3) ===== */
+.underline-sweep{
+  position:relative; display:inline-block;
+}
+.underline-sweep::after{
+  content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0%;
+  background: rgba(255,255,255,.9); transition: width .38s cubic-bezier(.2,.8,.2,1);
+}
+.underline-sweep:hover::after{ width:100%; }
+
+/* ===== respect reduced motion ===== */
+@media (prefers-reduced-motion: reduce){
+  [data-reveal]{ opacity:1 !important; transform:none !important; transition:none !important; }
+  [data-parallax-y],[data-parallax-x],[data-mouse-parallax],[data-tilt]{ transform:none !important; }
+}

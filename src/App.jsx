@@ -40,10 +40,7 @@ export default function App() {
         {/* Services рендерит свою <section id="services"> внутри */}
         <Services />
 
-        {/* About (клиенты/о нас) */}
-        <section id="clients" className="section">
           <About />
-        </section>
 
         {/* СИСТЕМА СТАНДАРТОВ — без обёртки .section для full-bleed */}
         <Standards />
@@ -65,7 +62,7 @@ export default function App() {
         </section>
       </main>
 
-      <footer className="footer">Copyright by respace.ru 2023</footer>
+      <footer className="footer"></footer>
     </>
   );
 }
