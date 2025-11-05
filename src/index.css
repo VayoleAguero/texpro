@@ -1039,3 +1039,166 @@ a { color: inherit; text-decoration: none; }
   width: auto;                      /* кнопку оставим компактной */
 }
 
+.about {
+  position: relative;
+  overflow: hidden;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 30%) 1fr;
+  position: relative;
+  z-index: 2; /* текст и левая колонка поверх */
+}
+
+.about-visual {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 50%;   /* начинаем с середины */
+  width: 50vw; /* правая половина экрана */
+  height: 100%;
+  z-index: 1;
+}
+
+.about-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== ABOUT: gridless layout + гарантированная высота ===== */
+:root{
+  --aboutVisW: min(640px, 46vw);             /* ширина правого визуала */
+  --aboutVisH: clamp(520px, 58vw, 820px);    /* высота визуала / секции */
+}
+
+.about{
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  padding: clamp(36px, 5vw, 72px) 0;         /* вертикальные отступы секции */
+}
+
+/* Контентный контейнер: убираем grid и даём место под визуал справа */
+.about-grid{
+  display: block;                             /* было: grid */
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 3vw, 24px);
+  min-height: var(--aboutVisH);               /* ВАЖНО: высота секции = высоте визуала */
+  padding-right: calc(var(--aboutVisW) + clamp(16px, 4vw, 40px)); /* место под визуал */
+}
+
+/* Левая колонка-копия остаётся потоковой, выравнивание как раньше */
+.about-copy{
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  justify-items: end;
+  align-content: center;
+  text-align: right;
+  padding: clamp(8px, 1.2vw, 16px);
+}
+
+/* Правый визуал закрепляем справа и растягиваем на min-height */
+.about-visual{
+  position: absolute;
+  inset: 0 0 0 auto;          /* top:0; right:0; bottom:0; */
+  width: var(--aboutVisW);
+  min-height: var(--aboutVisH);
+  z-index: 1;
+  isolation: isolate;
+}
+
+/* Картинки внутри визуала — как у тебя, только без «зум-артефактов» */
+.about-bg{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 60% 50%;
+  transform: none;
+  filter: none;
+}
+.about-fore{
+  position: absolute;
+  width: min(46%, 520px);
+  aspect-ratio: 1/1;
+  left: -6%;
+  top: 18%;
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.28);
+  z-index: 2;
+  border: 0;
+}
+
+/* Адаптив: на планшете/мобиле визуал становится потоковым блоком сверху */
+@media (max-width: 1024px){
+  .about-grid{
+    padding-right: clamp(16px, 3vw, 24px);   /* убираем «место под визуал» */
+    min-height: auto;                        /* высота теперь по содержимому */
+  }
+  .about-visual{
+    position: relative;
+    width: 100%;
+    height: clamp(420px, 60vw, 620px);
+    min-height: 0;
+    margin-bottom: clamp(18px, 4vw, 28px);
+  }
+  .about-fore{ width: 54%; left: 4%; top: 50%; transform: translateY(-50%); }
+}
+@media (max-width: 560px){
+  .about-visual{ height: 440px; }
+  .about-fore{ width: 62%; left: 3%; top: 56%; transform: none; }
+}
+
+/* === ABOUT: сдвиг левой колонки текста чуть левее, визуал справа не трогаем === */
+:root{
+  --aboutTextShift: clamp(24px, 5vw, 300px); /* регулируй величину сдвига тут */
+}
+
+@media (min-width: 1025px){
+  .about-copy{
+    transform: translateX(calc(-1 * var(--aboutTextShift)));
+  }
+}
+
+/* на планшете и ниже — без сдвига (там у тебя потоковая раскладка) */
+@media (max-width: 1024px){
+  .about-copy{ transform: none; }
+}
+
+/* сколько сдвигать влево */
+:root{ --aboutTextShift: clamp(24px, 5vw, 250px); }
+
+@media (min-width:1025px){
+  .about-copy{
+    position: relative;
+    z-index: 2;
+  }
+
+  /* 1) основной способ — отдельное свойство translate (не конфликтует с transform) */
+  @supports (translate: 1px){
+    .about-copy{
+      translate: calc(-1 * var(--aboutTextShift)) 0 !important;
+    }
+  }
+
+  /* 2) fallback, если translate не поддерживается */
+  @supports not (translate: 1px){
+    .about-copy{
+      margin-left: calc(-1 * var(--aboutTextShift)) !important;
+    }
+  }
+}
+
+/* планшет и ниже — без сдвига */
+@media (max-width:1024px){
+  .about-copy{
+    translate: 0 0 !important;
+    margin-left: 0 !important;
+  }
+}
+
